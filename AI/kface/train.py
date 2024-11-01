@@ -4,12 +4,15 @@ from networks.models import ArcFaceModel, ArcHead
 from networks.losses import SoftmaxLoss
 import data.load_arcface as dataset
 from utils import load_yaml, get_ckpt_inf
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"]="8"
 
 
 # arc_res50_kface_finetune.yaml 파일의 설정을 불러와 모델 학습에 필요한 파라미터를 cfg에 저장
 # ongoing=False 이므로 새로운 학습 시작
 def main(ongoing=False):
-    cfg = load_yaml("../configs/arc_res50_kface_finetune.yaml")
+    cfg = load_yaml("configs/arc_res50_kface_finetune.yaml")
 
     # 사전 훈련된 모델 로드
     # 파인튜닝 시에는 설정 파일에 정의된 num_classes를 사용하고, 
@@ -51,11 +54,24 @@ def main(ongoing=False):
         dataset_len = cfg['num_samples']
         steps_per_epoch = dataset_len // cfg['batch_size']
 
-    print("[*] load ckpt from {}".format(ckpt_path))
-    model.load_weights(ckpt_path)
-    epochs, steps = get_ckpt_inf(ckpt_path, steps_per_epoch)
+    # print("[*] load ckpt from {}".format(ckpt_path))
+    # if ckpt_path is None:
+    #     print("Checkpoint file not found in specified path. Please check the path:", "weights/" + model_name)
+    # else:
+    #     model.load_weights(ckpt_path)
 
-    if not ongoing:
+    # # model.load_weights(ckpt_path)
+    # epochs, steps = get_ckpt_inf(ckpt_path, steps_per_epoch)
+
+    # if not ongoing:
+    #     epochs, steps = 1, 1
+
+    if ckpt_path is not None:
+        print("[*] load ckpt from {}".format(ckpt_path))
+        model.load_weights(ckpt_path)
+        epochs, steps = get_ckpt_inf(ckpt_path, steps_per_epoch)
+    else:
+        print("[*] training from scratch.")
         epochs, steps = 1, 1
     
 
