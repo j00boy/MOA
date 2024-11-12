@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import styled, {css, useTheme} from 'styled-components/native';
 import {IconButton} from '../common/button/IconButton';
 import {useUserStore} from '../../stores/userStores';
-import {TextInput, View} from 'react-native';
+import {TextInput, View, TouchableOpacity, Button} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 interface TextProps {
@@ -75,8 +75,8 @@ const IconButtonStyled = styled.View`
 const MyProfile = styled.Image`
   border-radius: 50px;
   border: 1px solid ${(props) => props.theme.colors.lightgray};
-  width: 70px;
-  height: 70px;
+  width: 75px;
+  height: 75px;
   background-color: ${(props) => props.theme.colors.maindarkorange};
 `;
 
@@ -134,11 +134,11 @@ const MyInfo = () => {
                 fontFamily: theme.fontFamily.SCDream4,
                 textDecorationLine: 'none',
                 color: theme.colors.black,
-                height: 24, // 적절한 높이 설정
+                height: 24,
                 width: 100,
                 borderColor: theme.colors.maindarkorange,
                 borderRadius: 7,
-                borderWidth: 1, // 밑줄 두께 설정
+                borderWidth: 1,
                 textAlignVertical: 'bottom', // 텍스트를 수직 중앙 정렬
                 margin: 0,
                 padding: 0,
@@ -155,18 +155,39 @@ const MyInfo = () => {
           )}
           <Texts variant="subtitle">님 안녕하세요!</Texts>
         </Border>
-        {/* <Texts variant="body">내 그룹 | {DummyData[0].group} 개</Texts> */}
         <Texts variant="body">내 그룹 | {userGroups?.length} 개</Texts>
         <Texts variant="body">누적 업로드 사진 수 | 장</Texts>
       </TextInfo>
-      <MyProfile source={{uri: user?.userImage}} />
-      <IconButtonStyled>
-        <IconButton
-          backcolor="white"
-          iconName="edit"
-          iconSet="Material"
-          onPress={() => setIsEditing(true)}
+      <TouchableOpacity
+        onPress={isEditing ? pickImage : undefined}
+        activeOpacity={isEditing ? 0.7 : 1}
+      >
+        <MyProfile
+          source={{uri: userImage}}
+          style={{
+            borderColor: isEditing
+              ? theme.colors.maindarkorange
+              : theme.colors.lightgray, // 동적 테두리 색상
+            borderWidth: isEditing ? 2 : 1, // 테두리 두께
+          }}
         />
+      </TouchableOpacity>
+      <IconButtonStyled>
+        {isEditing ? (
+          <IconButton
+            backcolor="white"
+            iconName="save"
+            iconSet="Material"
+            onPress={() => handleSave()}
+          />
+        ) : (
+          <IconButton
+            backcolor="white"
+            iconName="edit"
+            iconSet="Material"
+            onPress={() => setIsEditing(true)}
+          />
+        )}
       </IconButtonStyled>
     </UserInfo>
   );
