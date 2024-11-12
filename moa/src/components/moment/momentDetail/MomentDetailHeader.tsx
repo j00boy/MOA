@@ -1,4 +1,4 @@
-import {TouchableOpacity} from 'react-native';
+import {Alert, TouchableOpacity} from 'react-native';
 import React, {useState} from 'react';
 import {MomentInfoDetail} from '../../../types/moment';
 import styled, {useTheme} from 'styled-components/native';
@@ -9,6 +9,8 @@ import PinModal from '../../common/modal/PinModal';
 import {AppHeaderNavigationProp} from '../../../types/screen';
 import {useNavigation} from '@react-navigation/native';
 import {formatDate} from '../../../utils/common';
+import {useAuthStore} from '../../../stores/authStores';
+import api from '../../../utils/api';
 
 const Container = styled.View`
   width: 100%;
@@ -78,6 +80,7 @@ interface MomentDetailHeaderProps {
 }
 
 const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
+  const userId = useAuthStore((state) => state.userId);
   const [isOptionModalVisible, setOptionModalVisible] = useState(false);
   const [isPinModalVisible, setPinModalVisible] = useState(false);
 
@@ -91,13 +94,30 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
     setPinModalVisible(!isPinModalVisible);
   };
 
-  const options = [
-    {id: 'pin', label: 'PIN번호 보기'},
-    {id: 'put', label: '그룹 수정'},
-    {id: 'delete', label: '그룹 삭제'},
-  ];
+  const options =
+    momentInfoDetail.momentOwner.userId === userId
+      ? [
+          {id: 'pin', label: 'PIN번호 보기'},
+          {id: 'patch', label: '순간 수정'},
+          {id: 'delete', label: '순간 삭제'},
+        ]
+      : [
+          {id: 'pin', label: 'PIN번호 보기'},
+          {id: 'put', label: '순간 나가기'},
+        ];
 
-  // console.log(momentInfoDetail);
+  const handleDeleteMoment = async () => {
+    try {
+      await api.delete(`/moment/${momentInfoDetail.id}`);
+      Alert.alert(
+        '순간 삭제 완료',
+        `${momentInfoDetail.momentName} 순간의 삭제가 완료되었습니다.`,
+      );
+      navigation.navigate('Home');
+    } catch {
+      Alert.alert('순간 삭제 실패', '순간 삭제 도중 오류가 발생했습니다.');
+    }
+  };
 
   const handleSelectOption = (optionId: string) => {
     toggleOptionModal();
@@ -105,7 +125,7 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
     if (optionId === 'pin') {
       toggleOptionModal();
       togglePinModal();
-    } else if (optionId === 'put') {
+    } else if (optionId === 'patch') {
       toggleOptionModal();
       navigation.navigate('MomentAdd', {
         momentAddInfo: {
@@ -118,6 +138,8 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
       });
     } else if (optionId === 'delete') {
       toggleOptionModal();
+      handleDeleteMoment();
+    } else if (optionId === 'put') {
     }
   };
 

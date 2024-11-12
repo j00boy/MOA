@@ -7,7 +7,7 @@ import {MomentAddInfo} from './moment';
 export type HomeStackParamList = {
   Home: undefined;
   GroupDetail: {groupInfo: {groupId: string; groupName: string}};
-  MomentDetail: {momentInfo: {momentId: string; momentName: string}};
+  MomentDetail: {momentId: string};
   // 여기에 스크린 추가
 };
 

@@ -98,9 +98,9 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
           } else if (nestedRoute && nestedRoute.name === 'MomentDetail') {
             const params =
               nestedRoute.params as MomentDetailRouteProp['params'];
-            if (params?.momentInfo?.momentId) {
+            if (params?.momentId) {
               // MomentDetail에 있을 때 업로드 로직
-              uploadImageToMoment(params.momentInfo.momentId, image.uri);
+              uploadImageToMoment(params.momentId, image.uri);
             }
           } else {
             // Home으로 이동 -> 나중에 Home 선택모드로 이동
