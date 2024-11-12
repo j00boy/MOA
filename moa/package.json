@@ -13,6 +13,9 @@
   "dependencies": {
     "@react-native-camera-roll/camera-roll": "^7.8.3",
     "@react-native-clipboard/clipboard": "^1.14.3",
+    "@react-native-kakao/core": "^2.2.6",
+    "@react-native-kakao/share": "^2.2.6",
+    "@react-native-kakao/social": "^2.2.6",
     "@react-native-picker/picker": "^2.9.0",
     "@react-native-seoul/kakao-login": "^5.4.1",
     "@react-navigation/bottom-tabs": "^6.6.1",

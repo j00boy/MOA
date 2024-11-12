@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import StyledModal from '../../common/modal/StyledModal';
 import {onShare} from '../../../utils/share';
 import PinModal from '../../common/modal/PinModal';
+import {sendFeedMessage} from '../../../utils/kakaoshare';
 import {AppHeaderNavigationProp} from '../../../types/screen';
 import {useNavigation} from '@react-navigation/native';
 import {formatDate} from '../../../utils/common';
@@ -150,11 +151,20 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
       <TitleLine>
         <LeftTime>남은 시간 타이머</LeftTime>
         <IconContainer>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() =>
               onShare(
                 `${momentInfoDetail.momentName} 순간`,
                 `moa://moment/${momentInfoDetail.id}`,
+              )
+            }
+          > */}
+
+          <TouchableOpacity
+            onPress={() =>
+              sendFeedMessage(
+                `${momentInfoDetail.momentName} 순간`,
+                `moment/${momentInfoDetail.id}`,
               )
             }
           >

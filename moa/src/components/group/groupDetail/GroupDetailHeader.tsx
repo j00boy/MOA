@@ -9,6 +9,7 @@ import StyledModal from '../../common/modal/StyledModal';
 import PinModal from '../../common/modal/PinModal';
 import {HomeStackParamList} from '../../../types/screen';
 import {RouteProp, useRoute} from '@react-navigation/native';
+import {sendFeedMessage} from '../../../utils/kakaoshare';
 
 const Container = styled.View`
   width: 100%;
@@ -173,11 +174,19 @@ const GroupDetailHeader = ({
           <NormalText>부터 모인 사진 총</NormalText>
           <PhotoNumText color={darkColor}>777장</PhotoNumText>
         </LineContainer>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() =>
             onShare(
               `${groupInfoDetail.groupName} 그룹`,
               `moa://group/${groupId}`,
+            )
+          }
+        > */}
+        <TouchableOpacity
+          onPress={() =>
+            sendFeedMessage(
+              `${groupInfoDetail.groupName} 그룹`,
+              `group/${groupId}`,
             )
           }
         >
