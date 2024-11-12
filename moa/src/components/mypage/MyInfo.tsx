@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled, {css, useTheme} from 'styled-components/native';
 import {IconButton} from '../common/button/IconButton';
+import {useUserStore} from '../../stores/userStores';
 
 interface TextProps {
   variant: 'title' | 'subtitle' | 'body';
@@ -72,39 +73,44 @@ const MyProfile = styled.Image`
 
 const MyInfo = () => {
   const theme = useTheme();
-  const DummyData = [
-    {
-      name: '에브리데이',
-      group: 3, // 내 그룹
-      totalDownloads: 1500, // 누적 다운로드 수
-    },
-    {
-      name: '이영희',
-      group: 5, // 내 그룹
-      totalDownloads: 2300, // 누적 다운로드 수
-    },
-    {
-      name: '김철수',
-      group: 1, // 내 그룹
-      totalDownloads: 500, // 누적 다운로드 수
-    },
-  ];
+  const {fetchUser, user, fetchUserGroups, userGroups} = useUserStore();
+  useEffect(() => {
+    fetchUser();
+    fetchUserGroups();
+  }, [fetchUser]);
+  // const DummyData = [
+  //   {
+  //     name: '에브리데이',
+  //     group: 3, // 내 그룹
+  //     totalDownloads: 1500, // 누적 다운로드 수
+  //   },
+  //   {
+  //     name: '이영희',
+  //     group: 5, // 내 그룹
+  //     totalDownloads: 2300, // 누적 다운로드 수
+  //   },
+  //   {
+  //     name: '김철수',
+  //     group: 1, // 내 그룹
+  //     totalDownloads: 500, // 누적 다운로드 수
+  //   },
+  // ];
 
   return (
     <UserInfo>
       <TextInfo>
         <Texts variant="subtitle">
           <Texts variant="subtitle" color={theme.colors.maindarkorange}>
-            {DummyData[0].name}
+            {/* {DummyData[0].name} */}
+            {user?.userName}
           </Texts>
           님 안녕하세요!
         </Texts>
-        <Texts variant="body">내 그룹 | {DummyData[0].group} 개</Texts>
-        <Texts variant="body">
-          누적 다운로드 사진 수 | {DummyData[0].totalDownloads} 장
-        </Texts>
+        {/* <Texts variant="body">내 그룹 | {DummyData[0].group} 개</Texts> */}
+        <Texts variant="body">내 그룹 | {userGroups?.length} 개</Texts>
+        <Texts variant="body">누적 업로드 사진 수 | 장</Texts>
       </TextInfo>
-      <MyProfile source={{uri: '/'}} />
+      <MyProfile source={{uri: user?.userImage}} />
       <IconButtonStyled>
         <IconButton
           backcolor="white"
