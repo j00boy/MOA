@@ -159,19 +159,12 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
               )
             }
           > */}
+
           <TouchableOpacity
             onPress={() =>
               sendFeedMessage(
                 `${momentInfoDetail.momentName} 순간`,
-                `moment/${momentInfoDetail.momentId}`,
-              )
-            }
-          > */}
-          <TouchableOpacity
-            onPress={() =>
-              sendFeedMessage(
-                `${momentInfoDetail.momentName} 순간`,
-                `moment/${momentInfoDetail.momentId}`,
+                `moment/${momentInfoDetail.id}`,
               )
             }
           >
