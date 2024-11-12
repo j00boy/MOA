@@ -57,10 +57,7 @@ const MyMomentListItem = ({momentInfo}: MyMomentListItemProps) => {
     <Container
       onPress={() =>
         navigation.navigate('MomentDetail', {
-          momentInfo: {
-            momentId: momentInfo.momentId,
-            momentName: momentInfo.momentTitle,
-          },
+          momentId: momentInfo.momentId,
         })
       }
     >

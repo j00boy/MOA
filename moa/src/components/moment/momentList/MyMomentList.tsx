@@ -5,6 +5,8 @@ import LoadingSpinner from '../../common/LoadingSpinner';
 import api from '../../../utils/api';
 import {Alert} from 'react-native';
 import {MomentInfo} from '../../../types/moment';
+import {useNavigation} from '@react-navigation/native';
+import {HomeScreenNavigationProp} from '../../../types/screen';
 
 const Container = styled.View`
   width: 100%;
@@ -29,6 +31,8 @@ const MyMomentList = ({refreshing, onRefresh}: MyMomentListProps) => {
   const [loading, setLoading] = useState(false);
   const [momentList, setMomentList] = useState<MomentInfo[]>();
 
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
   const handleGetMomentList = async () => {
     setLoading(true);
     try {
@@ -47,6 +51,14 @@ const MyMomentList = ({refreshing, onRefresh}: MyMomentListProps) => {
   useEffect(() => {
     handleGetMomentList();
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      handleGetMomentList();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     if (refreshing) {

@@ -45,10 +45,7 @@ const MomentDetail: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [isPinModalVisible, setIsPinModalVisible] = useState(false);
 
-  const {momentId, momentName} = route.params.momentInfo || {
-    momentId: '',
-    momentName: '',
-  };
+  const momentId = route.params.momentId;
 
   const toggleModal = useCallback(() => {
     setIsPinModalVisible((prev) => !prev);
@@ -77,12 +74,20 @@ const MomentDetail: React.FC = () => {
   }, [getMomentDetail]);
 
   useEffect(() => {
-    if (momentName) {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getMomentDetail();
+    });
+
+    return unsubscribe;
+  }, [navigation, getMomentDetail]);
+
+  useEffect(() => {
+    if (momentInfoDetail) {
       navigation.setOptions({
-        header: () => <StackHeader title={momentName} />,
+        header: () => <StackHeader title={momentInfoDetail.momentName} />,
       });
     }
-  }, [momentName, navigation]);
+  }, [momentInfoDetail, momentInfoDetail.momentName, navigation]);
 
   return (
     <ScreenContainer>

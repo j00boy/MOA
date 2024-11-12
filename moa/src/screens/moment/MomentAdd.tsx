@@ -76,23 +76,34 @@ const MomentAdd = () => {
       return;
     }
 
-    const newMoment = {
-      momentName: momentName,
-      momentDescription: momentDescription,
-      uploadOption: uploadOption,
-    };
-
     setLoading(true);
 
     try {
-      const response = await api.post('/moment', newMoment);
-      Alert.alert('순간 생성', `${momentName} 순간이 생성되었습니다.`);
-      navigation.navigate('MomentDetail', {
-        momentInfo: {
-          momentId: response.data?.momentId,
+      if (isEdit) {
+        const newMoment = {
           momentName: momentName,
-        },
-      });
+          momentDescription: momentDescription,
+        };
+        const response = await api.patch(
+          `/moment/${momentAddInfo.momentId}`,
+          newMoment,
+        );
+        Alert.alert('순간 생성', `${momentName} 순간 수정이 완료되었습니다.`);
+        navigation.navigate('MomentDetail', {
+          momentId: response.data?.momentId,
+        });
+      } else {
+        const newMoment = {
+          momentName: momentName,
+          momentDescription: momentDescription,
+          uploadOption: uploadOption,
+        };
+        const response = await api.post('/moment', newMoment);
+        Alert.alert('순간 생성', `${momentName} 순간이 생성되었습니다.`);
+        navigation.navigate('MomentDetail', {
+          momentId: response.data?.momentId,
+        });
+      }
     } catch (error) {
       Alert.alert('순간 생성 오류', '순간 생성 중 오류가 발생했습니다.');
     } finally {
@@ -117,6 +128,7 @@ const MomentAdd = () => {
           <StyledPicker
             selectedValue={uploadOption}
             onValueChange={(itemValue) => setUploadOption(itemValue as string)}
+            enabled={!isEdit}
           >
             <Picker.Item label="나의 업로드만 허용" value="only" />
             <Picker.Item label="모든 멤버의 업로드 허용" value="all" />
@@ -125,7 +137,7 @@ const MomentAdd = () => {
       </AddInputBox>
       <ButtonContainer>
         <TextButton
-          text="순간 만들기"
+          text={isEdit ? '순간 수정하기' : '순간 만들기'}
           size="large"
           backcolor="maindarkorange"
           onPress={handleMomentPost}
