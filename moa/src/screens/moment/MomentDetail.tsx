@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useCallback, useEffect, useState} from 'react';
 import ScreenContainer from '../../components/common/ScreenContainer';
@@ -47,9 +48,9 @@ const MomentDetail: React.FC = () => {
 
   const momentId = route.params.momentId;
 
-  const toggleModal = useCallback(() => {
-    setIsPinModalVisible((prev) => !prev);
-  }, []);
+  const toggleModal = () => {
+    setIsPinModalVisible(!isPinModalVisible);
+  };
 
   const getMomentDetail = useCallback(async () => {
     setLoading(true);
@@ -60,6 +61,7 @@ const MomentDetail: React.FC = () => {
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.data.status === 403) {
         console.log(error.response.data.status);
+        console.log(momentId);
         toggleModal();
       } else {
         Alert.alert('순간 조회 오류', '나의 순간 조회 중 오류가 발생했습니다.');
@@ -67,7 +69,7 @@ const MomentDetail: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [momentId, toggleModal]);
+  }, [momentId]);
 
   useEffect(() => {
     getMomentDetail();
@@ -106,10 +108,9 @@ const MomentDetail: React.FC = () => {
         </Container>
       )}
       <PinPostModal
-        momentId={momentInfoDetail.id}
+        momentId={momentId}
         isModalVisible={isPinModalVisible}
         toggleModal={toggleModal}
-        momentPin={momentInfoDetail.momentPin}
       />
     </ScreenContainer>
   );

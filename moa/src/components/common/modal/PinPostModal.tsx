@@ -4,7 +4,10 @@ import styled from 'styled-components/native';
 import {Alert, TextInput} from 'react-native';
 import {TextButton} from '../button/TextButton';
 import api from '../../../utils/api';
-import {HomeScreenNavigationProp} from '../../../types/screen';
+import {
+  AppNavigationProp,
+  HomeScreenNavigationProp,
+} from '../../../types/screen';
 import {useNavigation} from '@react-navigation/native';
 
 const ContentContainer = styled.View`
@@ -55,14 +58,12 @@ const ButtonContainer = styled.View`
 
 interface PinModalProps {
   momentId: string;
-  momentPin: string;
   isModalVisible: boolean;
   toggleModal: () => void;
 }
 
 const PinPostModal = ({
   momentId,
-  momentPin,
   isModalVisible,
   toggleModal,
 }: PinModalProps) => {
@@ -81,20 +82,21 @@ const PinPostModal = ({
 
   const handleGoback = () => {
     toggleModal();
-    navigation.goBack();
+    navigation.navigate('HomeStack', {screen: 'Home', params: undefined});
   };
 
   const handleSubmitPin = async () => {
-    if (momentPin === pinNum) {
+    try {
+      console.log(momentId);
+      console.log(pinNum);
       await api.post(`/moment/${momentId}?PIN=${pinNum}`);
       toggleModal();
-      return;
+    } catch {
+      Alert.alert('PIN번호 오류', 'PIN번호가 일치하지 않습니다.');
     }
-
-    Alert.alert('PIN번호 오류', 'PIN번호가 일치하지 않습니다.');
   };
 
-  const navigation = useNavigation<HomeScreenNavigationProp>();
+  const navigation = useNavigation<AppNavigationProp>();
 
   return (
     <StyledModal

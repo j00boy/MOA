@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 
 const Container = styled.View<{itemSize: number}>`
   width: ${({itemSize}) => itemSize}px;
-  height: 100px;
+  min-height: 100px;
   align-items: center;
   justify-content: space-between;
   margin-right: 15px;
@@ -25,10 +25,21 @@ const Name = styled.Text`
   font-family: 'SCDream5';
   font-size: 12px;
   color: ${({theme}) => theme.colors.deepgray};
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `;
 
 const IsMe = styled(Name)`
   color: ${({theme}) => theme.colors.maindarkorange};
+`;
+
+const IsMeText = styled(IsMe)`
+  font-size: 10px;
+`;
+
+const Owner = styled(Name)`
+  font-size: 10px;
 `;
 
 interface MemberListItemProps {
@@ -55,11 +66,15 @@ const MemberListItem = ({
       />
       <NameLine>
         {isMe ? (
-          <IsMe>{userName}&nbsp;(나)</IsMe>
+          <>
+            <IsMe>{userName}</IsMe>
+            <IsMeText>&nbsp;(나)</IsMeText>
+          </>
         ) : (
-          <Name>
-            {userName} {isOwner && '(관리자)'}
-          </Name>
+          <>
+            <Name>{userName}</Name>
+            {isOwner && <Owner>&nbsp;(관리자)</Owner>}
+          </>
         )}
       </NameLine>
     </Container>

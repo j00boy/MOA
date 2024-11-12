@@ -151,23 +151,22 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
       <TitleLine>
         <LeftTime>남은 시간 타이머</LeftTime>
         <IconContainer>
-          {/* <TouchableOpacity
+          <TouchableOpacity
             onPress={() =>
               onShare(
                 `${momentInfoDetail.momentName} 순간`,
                 `moa://moment/${momentInfoDetail.id}`,
               )
             }
-          > */}
-
-          <TouchableOpacity
+          >
+            {/* <TouchableOpacity
             onPress={() =>
               sendFeedMessage(
                 `${momentInfoDetail.momentName} 순간`,
                 `moment/${momentInfoDetail.id}`,
               )
             }
-          >
+          > */}
             <Icon
               name="share-social-sharp"
               size={22}
