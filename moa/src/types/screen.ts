@@ -1,12 +1,21 @@
+import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {GroupAddInfo} from './group';
+import {MomentAddInfo} from './moment';
 
 // HomeStack의 ParamList 타입 정의
 export type HomeStackParamList = {
   Home: undefined;
   GroupDetail: {groupInfo: {groupId: string; groupName: string}};
-  MomentDetail: {momentInfo: {momentId: string; momentName: string}};
+  MomentDetail: {momentId: string};
   // 여기에 스크린 추가
 };
+
+export type GroupDetailRouteProp = RouteProp<HomeStackParamList, 'GroupDetail'>;
+export type MomentDetailRouteProp = RouteProp<
+  HomeStackParamList,
+  'MomentDetail'
+>;
 
 // Home 화면에서 사용하는 네비게이션 타입
 export type HomeScreenNavigationProp = StackNavigationProp<
@@ -28,7 +37,8 @@ export type MyPageScreenNavigationProp =
 export type AppHeaderParamList = {
   Home: undefined;
   Add: undefined;
-  GroupAdd: undefined;
+  GroupAdd: {groupAddInfo: GroupAddInfo; isEdit: boolean};
+  MomentAdd: {momentAddInfo: MomentAddInfo; isEdit: boolean};
   Notification: undefined;
 };
 

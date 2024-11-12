@@ -1,5 +1,5 @@
 // src/screens/KakaoTestScreen.tsx
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Button, Text, Alert} from 'react-native';
 import {
   login,

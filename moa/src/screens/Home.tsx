@@ -3,8 +3,9 @@ import {
   TouchableOpacity,
   Animated,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import ScreenContainer from '../components/common/ScreenContainer';
 import MyGroupList from '../components/group/groupList/MyGroupList';
@@ -52,8 +53,8 @@ const OptionButton = styled.TouchableOpacity`
 `;
 
 const ToggleText = styled.Text<{isActive: boolean}>`
+  font-family: 'SCDream5';
   font-size: 15px;
-  font-weight: bold;
   color: ${({theme, isActive}) =>
     isActive ? theme.colors.maindarkorange : theme.colors.deepgray};
 `;
@@ -64,10 +65,12 @@ const ScrollContainer = styled.ScrollView`
 
 const ContentContainer = styled.View`
   padding-bottom: 100px;
+  min-height: 200px;
 `;
 
 const Home = () => {
   const [isGroup, setIsGroup] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const togglePosition = useRef(new Animated.Value(4)).current;
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -109,6 +112,11 @@ const Home = () => {
     }).start();
   };
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, []);
+
   return (
     <ScreenContainer>
       <ToggleContainer
@@ -131,9 +139,20 @@ const Home = () => {
           </OptionButton>
         </OptionContainer>
       </ToggleContainer>
-      <ScrollContainer>
+      <ScrollContainer
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <ContentContainer>
-          {isGroup ? <MyGroupList /> : <MyMomentList />}
+          {isGroup ? (
+            <MyGroupList />
+          ) : (
+            <MyMomentList
+              refreshing={refreshing}
+              onRefresh={() => setRefreshing(false)}
+            />
+          )}
         </ContentContainer>
       </ScrollContainer>
     </ScreenContainer>

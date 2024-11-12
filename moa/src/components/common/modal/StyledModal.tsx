@@ -22,12 +22,14 @@ interface StyledModalProps {
   children: ReactNode;
   isModalVisible: boolean;
   toggleModal: () => void;
+  canClickOverlay?: boolean;
 }
 
 const StyledModal = ({
   children,
   isModalVisible,
   toggleModal,
+  canClickOverlay = true,
 }: StyledModalProps) => {
   return (
     <Modal
@@ -36,7 +38,10 @@ const StyledModal = ({
       onRequestClose={toggleModal}
       animationType="fade"
     >
-      <ModalOverlay activeOpacity={1} onPress={toggleModal}>
+      <ModalOverlay
+        activeOpacity={1}
+        onPress={canClickOverlay ? toggleModal : undefined}
+      >
         <TouchableWithoutFeedback>
           <ModalContainer>{children}</ModalContainer>
         </TouchableWithoutFeedback>

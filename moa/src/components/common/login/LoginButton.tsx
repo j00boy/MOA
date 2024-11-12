@@ -103,8 +103,10 @@ const LoginButton = () => {
         throw new Error('JWT Token 받기 실패');
       }
 
-      const jwtToken = response.data.token;
-
+      // const jwtToken = response.data.token;
+      const jwtToken = response.data.accessToken;
+      console.log('jwtToken 받음: ', jwtToken);
+      // console.log('jwt????? ', response);
       if (jwtToken) {
         await setAuthenticated(true, jwtToken); // JWT 토큰 저장 및 전역 상태 업데이트
       }

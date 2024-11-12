@@ -14,6 +14,7 @@ export type GroupInfoDetail = {
 };
 
 export type GroupAddInfo = {
+  groupId: string;
   groupName: string;
   groupDescription: string;
   groupColor: string;

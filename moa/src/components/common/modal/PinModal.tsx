@@ -47,6 +47,7 @@ const Pin = styled.Text`
 `;
 
 interface PinModalProps {
+  isPost?: boolean;
   pinNum: string;
   isModalVisible: boolean;
   toggleModal: () => void;

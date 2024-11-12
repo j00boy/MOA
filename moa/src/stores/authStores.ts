@@ -2,10 +2,12 @@
 import {create} from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {persist, createJSONStorage} from 'zustand/middleware';
+import {jwtDecode} from 'jwt-decode';
 
 interface AuthState {
   isAuthenticated: boolean;
   jwtToken: string | null;
+  userId: string | null;
   setAuthenticated: (authStatus: boolean, token?: string) => void;
   checkAuthStatus: () => Promise<void>;
   logout: () => Promise<void>;
@@ -17,27 +19,38 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       isAuthenticated: false,
       jwtToken: null,
+      userId: null,
 
       // 인증 상태를 설정하는 함수
       setAuthenticated: async (authStatus, token) => {
         if (authStatus && token) {
           await AsyncStorage.setItem('jwtToken', token);
-          set({isAuthenticated: true, jwtToken: token});
+
+          const decodedToken = jwtDecode<{userId: string}>(token);
+          const userId = decodedToken.userId;
+
+          set({isAuthenticated: true, jwtToken: token, userId});
         } else {
-          set({isAuthenticated: false, jwtToken: null});
+          set({isAuthenticated: false, jwtToken: null, userId: null});
         }
       },
 
       // AsyncStorage에서 토큰을 가져와 인증 상태 확인
       checkAuthStatus: async () => {
         const token = await AsyncStorage.getItem('jwtToken');
-        set({isAuthenticated: !!token, jwtToken: token});
+        if (token) {
+          const decodedToken = jwtDecode<{userId: string}>(token);
+          const userId = decodedToken.userId;
+          set({isAuthenticated: true, jwtToken: token, userId});
+        } else {
+          set({isAuthenticated: false, jwtToken: null, userId: null});
+        }
       },
 
       // 로그아웃 및 AsyncStorage에서 토큰 제거
       logout: async () => {
         await AsyncStorage.removeItem('jwtToken');
-        set({isAuthenticated: false, jwtToken: null});
+        set({isAuthenticated: false, jwtToken: null, userId: null});
       },
     }),
     {

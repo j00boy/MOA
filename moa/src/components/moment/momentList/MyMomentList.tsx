@@ -1,64 +1,79 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import MyMomentListItem from './MyMomentListItem';
 import styled from 'styled-components/native';
+import LoadingSpinner from '../../common/LoadingSpinner';
+import api from '../../../utils/api';
+import {Alert} from 'react-native';
+import {MomentInfo} from '../../../types/moment';
+import {useNavigation} from '@react-navigation/native';
+import {HomeScreenNavigationProp} from '../../../types/screen';
 
 const Container = styled.View`
   width: 100%;
   align-items: center;
   padding-top: 1px;
+  min-height: 200px;
 `;
 
-const MyMomentList = () => {
-  const momentList = [
-    {
-      momentId: '1',
-      momentName: '싸피 가을 마라톤',
-      momentOwner: '김관리',
-      createdAt: '2024-10-20',
-    },
-    {
-      momentId: '2',
-      momentName: '삼성 어린이집 운동회',
-      momentOwner: '박선생',
-      createdAt: '2024-10-17',
-    },
-    {
-      momentId: '3',
-      momentName: '어쩌고 해커톤',
-      momentOwner: '이매니저',
-      createdAt: '2024-11-01',
-    },
-    {
-      momentId: '4',
-      momentName: '용문사 템플스테이',
-      momentOwner: '최스님',
-      createdAt: '2024-11-15',
-    },
-    {
-      momentId: '5',
-      momentName: '삼성 어린이집 운동회입니다 오버플로우테스트',
-      momentOwner: '박선생',
-      createdAt: '2024-10-17',
-    },
-    {
-      momentId: '6',
-      momentName: '어쩌고 해커톤',
-      momentOwner: '이매니저',
-      createdAt: '2024-11-01',
-    },
-    {
-      momentId: '7',
-      momentName: '용문사 템플스테이',
-      momentOwner: '최스님',
-      createdAt: '2024-11-15',
-    },
-  ];
+const NullText = styled.Text`
+  font-family: 'SCDream4';
+  font-size: 15px;
+  color: ${({theme}) => theme.colors.deepgray};
+  margin-top: 50px;
+`;
+
+interface MyMomentListProps {
+  refreshing: boolean;
+  onRefresh: () => void;
+}
+
+const MyMomentList = ({refreshing, onRefresh}: MyMomentListProps) => {
+  const [loading, setLoading] = useState(false);
+  const [momentList, setMomentList] = useState<MomentInfo[]>();
+
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
+  const handleGetMomentList = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/moment');
+      setMomentList(response?.data);
+    } catch {
+      Alert.alert(
+        '나의 순간 오류',
+        '나의 순간 목록을 불러오는 중 오류가 발생했습니다.',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleGetMomentList();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      handleGetMomentList();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    if (refreshing) {
+      handleGetMomentList();
+      onRefresh(); // 새로고침 종료
+    }
+  }, [refreshing, onRefresh]);
 
   return (
     <Container>
-      {momentList.map((moment) => (
+      {momentList?.map((moment) => (
         <MyMomentListItem key={moment.momentId} momentInfo={moment} />
       ))}
+      {momentList?.length === 0 && <NullText>가입한 순간이 없습니다.</NullText>}
+      {loading && <LoadingSpinner isDark={false} />}
     </Container>
   );
 };

@@ -1,4 +1,4 @@
-import {TouchableOpacity} from 'react-native';
+import {Alert, TouchableOpacity} from 'react-native';
 import React, {useState} from 'react';
 import {MomentInfoDetail} from '../../../types/moment';
 import styled, {useTheme} from 'styled-components/native';
@@ -7,6 +7,11 @@ import StyledModal from '../../common/modal/StyledModal';
 import {onShare} from '../../../utils/share';
 import PinModal from '../../common/modal/PinModal';
 import {sendFeedMessage} from '../../../utils/kakaoshare';
+import {AppHeaderNavigationProp} from '../../../types/screen';
+import {useNavigation} from '@react-navigation/native';
+import {formatDate} from '../../../utils/common';
+import {useAuthStore} from '../../../stores/authStores';
+import api from '../../../utils/api';
 
 const Container = styled.View`
   width: 100%;
@@ -48,7 +53,6 @@ const ModalItem = styled.Text`
 
 const Description = styled.Text`
   width: 100%;
-  text-align: center;
   font-family: 'SCDream5';
   font-size: 15px;
   margin: 20px 0;
@@ -77,8 +81,11 @@ interface MomentDetailHeaderProps {
 }
 
 const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
+  const userId = useAuthStore((state) => state.userId);
   const [isOptionModalVisible, setOptionModalVisible] = useState(false);
   const [isPinModalVisible, setPinModalVisible] = useState(false);
+
+  const navigation = useNavigation<AppHeaderNavigationProp>();
 
   const toggleOptionModal = () => {
     setOptionModalVisible(!isOptionModalVisible);
@@ -88,11 +95,30 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
     setPinModalVisible(!isPinModalVisible);
   };
 
-  const options = [
-    {id: 'pin', label: 'PIN번호 보기'},
-    {id: 'put', label: '그룹 수정'},
-    {id: 'delete', label: '그룹 삭제'},
-  ];
+  const options =
+    momentInfoDetail.momentOwner.userId === userId
+      ? [
+          {id: 'pin', label: 'PIN번호 보기'},
+          {id: 'patch', label: '순간 수정'},
+          {id: 'delete', label: '순간 삭제'},
+        ]
+      : [
+          {id: 'pin', label: 'PIN번호 보기'},
+          {id: 'put', label: '순간 나가기'},
+        ];
+
+  const handleDeleteMoment = async () => {
+    try {
+      await api.delete(`/moment/${momentInfoDetail.id}`);
+      Alert.alert(
+        '순간 삭제 완료',
+        `${momentInfoDetail.momentName} 순간의 삭제가 완료되었습니다.`,
+      );
+      navigation.navigate('Home');
+    } catch {
+      Alert.alert('순간 삭제 실패', '순간 삭제 도중 오류가 발생했습니다.');
+    }
+  };
 
   const handleSelectOption = (optionId: string) => {
     toggleOptionModal();
@@ -100,17 +126,25 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
     if (optionId === 'pin') {
       toggleOptionModal();
       togglePinModal();
-    } else if (optionId === 'put') {
+    } else if (optionId === 'patch') {
       toggleOptionModal();
+      navigation.navigate('MomentAdd', {
+        momentAddInfo: {
+          momentId: momentInfoDetail.id,
+          momentName: momentInfoDetail.momentName,
+          momentDescription: momentInfoDetail.momentDescription,
+          uploadOption: momentInfoDetail.uploadOption,
+        },
+        isEdit: true,
+      });
     } else if (optionId === 'delete') {
       toggleOptionModal();
+      handleDeleteMoment();
+    } else if (optionId === 'put') {
     }
   };
 
   const theme = useTheme();
-
-  // 임시 핀번호 -> 나중에 변경 예정
-  const pinNum = '123456';
 
   return (
     <Container>
@@ -121,7 +155,15 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
             onPress={() =>
               onShare(
                 `${momentInfoDetail.momentName} 순간`,
-                `moa://moment/${momentInfoDetail.momentId}`,
+                `moa://moment/${momentInfoDetail.id}`,
+              )
+            }
+          > */}
+          <TouchableOpacity
+            onPress={() =>
+              sendFeedMessage(
+                `${momentInfoDetail.momentName} 순간`,
+                `moment/${momentInfoDetail.momentId}`,
               )
             }
           > */}
@@ -151,11 +193,11 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
       <Description>{momentInfoDetail.momentDescription}</Description>
       <TextLine>
         <TextName>생성일</TextName>
-        <TextContent>{momentInfoDetail.createdAt}</TextContent>
+        <TextContent>{formatDate(momentInfoDetail.createdAt)}</TextContent>
       </TextLine>
       <TextLine>
         <TextName>생성자</TextName>
-        <TextContent>{momentInfoDetail.momentOwner}</TextContent>
+        <TextContent>{momentInfoDetail.momentOwner.nickname}</TextContent>
       </TextLine>
       <StyledModal
         isModalVisible={isOptionModalVisible}
@@ -171,7 +213,7 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
         ))}
       </StyledModal>
       <PinModal
-        pinNum={pinNum}
+        pinNum={momentInfoDetail.momentPin}
         isModalVisible={isPinModalVisible}
         toggleModal={togglePinModal}
       />

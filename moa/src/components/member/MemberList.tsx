@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import MemberListItem from './MemberListItem';
-import {Profile} from '../../types/user';
 import {FlatList} from 'react-native';
+import {Member} from '../../types/moment';
+import {useAuthStore} from '../../stores/authStores';
 
 const Container = styled.View`
   width: 100%;
@@ -25,41 +26,24 @@ const TitleNum = styled(Title)<{darkColor: string}>`
 `;
 
 interface MemberListProps {
+  owner: Member;
+  memberList: Member[];
   darkColor?: string;
 }
 
-const MemberList = ({darkColor = ''}: MemberListProps) => {
+const MemberList = ({owner, memberList, darkColor = ''}: MemberListProps) => {
   const [containerWidth, setContainerWidth] = useState(0);
-
+  const userId = useAuthStore((state) => state.userId);
   const itemSize = (containerWidth - 3 * 15) / 4;
 
-  //임시 멤버 데이터 -> 수정 예정
-  const memberList: Profile[] = [
-    {
-      userId: 1,
-      userName: '문선정',
-      userImage: require('../../assets/images/logo.png'),
-    },
-    {
-      userId: 2,
-      userName: '김윤홍',
-      userImage: require('../../assets/images/logo.png'),
-    },
-    {
-      userId: 3,
-      userName: '김주형',
-      userImage: require('../../assets/images/logo.png'),
-    },
-    {
-      userId: 4,
-      userName: '민예림',
-      userImage: require('../../assets/images/logo.png'),
-    },
-    {
-      userId: 5,
-      userName: '임세하',
-      userImage: require('../../assets/images/logo.png'),
-    },
+  const sortedMemberList = [
+    ...memberList.filter((member) => member.userId === userId),
+    ...memberList.filter(
+      (member) => member.userId !== userId && member.userId === owner.userId,
+    ),
+    ...memberList.filter(
+      (member) => member.userId !== userId && member.userId !== owner.userId,
+    ),
   ];
 
   return (
@@ -71,18 +55,20 @@ const MemberList = ({darkColor = ''}: MemberListProps) => {
     >
       <TitleLine>
         <Title>참여중인 멤버</Title>
-        <TitleNum darkColor={darkColor}>{memberList.length}명</TitleNum>
+        <TitleNum darkColor={darkColor}>{memberList?.length}명</TitleNum>
       </TitleLine>
       <FlatList
-        data={memberList}
+        data={sortedMemberList}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.userId.toString()}
         renderItem={({item}) => (
           <MemberListItem
-            userName={item.userName}
-            userImage={item.userImage}
+            userName={item.nickname}
+            userImage={item.imageSrc}
             itemSize={itemSize}
+            isMe={item.userId === userId}
+            isOwner={item.userId !== userId && item.userId === owner.userId}
           />
         )}
       />

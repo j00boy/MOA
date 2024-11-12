@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import {MomentInfo} from '../../../types/moment';
 import {useNavigation} from '@react-navigation/native';
 import {HomeScreenNavigationProp} from '../../../types/screen';
+import {formatDate} from '../../../utils/common';
 
 const Container = styled.TouchableOpacity`
   width: 99%;
@@ -56,18 +57,15 @@ const MyMomentListItem = ({momentInfo}: MyMomentListItemProps) => {
     <Container
       onPress={() =>
         navigation.navigate('MomentDetail', {
-          momentInfo: {
-            momentId: momentInfo.momentId,
-            momentName: momentInfo.momentName,
-          },
+          momentId: momentInfo.momentId,
         })
       }
     >
       <TitleLine>
         <Title numberOfLines={1} ellipsizeMode="tail">
-          {momentInfo.momentName}
+          {momentInfo.momentTitle}
         </Title>
-        <Date>{momentInfo.createdAt}</Date>
+        <Date>{formatDate(momentInfo.createdAt)}</Date>
       </TitleLine>
       <Owner>{momentInfo.momentOwner}</Owner>
     </Container>
