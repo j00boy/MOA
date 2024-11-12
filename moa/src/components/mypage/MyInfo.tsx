@@ -1,7 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled, {css, useTheme} from 'styled-components/native';
 import {IconButton} from '../common/button/IconButton';
 import {useUserStore} from '../../stores/userStores';
+import {TextInput, View} from 'react-native';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 interface TextProps {
   variant: 'title' | 'subtitle' | 'body';
@@ -57,6 +59,13 @@ const Texts = styled.Text<TextProps>`
     }
   }}
 `;
+
+const Border = styled.View`
+  flex-direction: row;
+  align-items: top;
+  padding: 0;
+`;
+
 const IconButtonStyled = styled.View`
   position: absolute;
   top: 8px;
@@ -73,39 +82,79 @@ const MyProfile = styled.Image`
 
 const MyInfo = () => {
   const theme = useTheme();
-  const {fetchUser, user, fetchUserGroups, userGroups} = useUserStore();
+  const {fetchUser, user, fetchUserGroups, userGroups, updateUser} =
+    useUserStore();
+  const [isEditing, setIsEditing] = useState(false);
+  const [userName, setUserName] = useState(user?.userName || '');
+  const [userImage, setUserImage] = useState(user?.userImage || '');
+
   useEffect(() => {
     fetchUser();
     fetchUserGroups();
   }, [fetchUser]);
-  // const DummyData = [
-  //   {
-  //     name: '에브리데이',
-  //     group: 3, // 내 그룹
-  //     totalDownloads: 1500, // 누적 다운로드 수
-  //   },
-  //   {
-  //     name: '이영희',
-  //     group: 5, // 내 그룹
-  //     totalDownloads: 2300, // 누적 다운로드 수
-  //   },
-  //   {
-  //     name: '김철수',
-  //     group: 1, // 내 그룹
-  //     totalDownloads: 500, // 누적 다운로드 수
-  //   },
-  // ];
+
+  useEffect(() => {
+    if (user) {
+      setUserName(user?.userName || '');
+      setUserImage(user?.userImage || '');
+    }
+  }, [user]);
+
+  const handleSave = async () => {
+    await updateUser({userName, userImage}); // 업데이트된 정보 전송
+    setIsEditing(false);
+    fetchUser(); // 업데이트 후 사용자 정보 다시 불러오기
+  };
+
+  const pickImage = async () => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      maxWidth: 200,
+      maxHeight: 200,
+      quality: 1,
+    });
+
+    if (result.assets && result.assets[0].uri) {
+      setUserImage(result.assets[0].uri);
+    }
+  };
 
   return (
     <UserInfo>
       <TextInfo>
-        <Texts variant="subtitle">
-          <Texts variant="subtitle" color={theme.colors.maindarkorange}>
-            {/* {DummyData[0].name} */}
-            {user?.userName}
-          </Texts>
-          님 안녕하세요!
-        </Texts>
+        <Border style={{paddingVertical: 8}}>
+          {isEditing ? (
+            <TextInput
+              value={userName}
+              onChangeText={setUserName}
+              placeholder="닉네임 입력"
+              style={{
+                marginRight: 5,
+                fontSize: 14,
+                fontFamily: theme.fontFamily.SCDream4,
+                textDecorationLine: 'none',
+                color: theme.colors.black,
+                height: 24, // 적절한 높이 설정
+                width: 100,
+                borderColor: theme.colors.maindarkorange,
+                borderRadius: 7,
+                borderWidth: 1, // 밑줄 두께 설정
+                textAlignVertical: 'bottom', // 텍스트를 수직 중앙 정렬
+                margin: 0,
+                padding: 0,
+                paddingLeft: 8,
+              }}
+              maxLength={5}
+              selectionColor={theme.colors.maindarkorange}
+              underlineColorAndroid="transparent"
+            />
+          ) : (
+            <Texts variant="subtitle" color={theme.colors.maindarkorange}>
+              {user?.userName}
+            </Texts>
+          )}
+          <Texts variant="subtitle">님 안녕하세요!</Texts>
+        </Border>
         {/* <Texts variant="body">내 그룹 | {DummyData[0].group} 개</Texts> */}
         <Texts variant="body">내 그룹 | {userGroups?.length} 개</Texts>
         <Texts variant="body">누적 업로드 사진 수 | 장</Texts>
@@ -116,7 +165,7 @@ const MyInfo = () => {
           backcolor="white"
           iconName="edit"
           iconSet="Material"
-          onPress={() => console.log('편집 아이콘 버튼 눌렀음')}
+          onPress={() => setIsEditing(true)}
         />
       </IconButtonStyled>
     </UserInfo>
