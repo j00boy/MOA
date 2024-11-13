@@ -142,7 +142,7 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
 
       const formData = new FormData();
 
-      selectedImages.forEach((image) => {
+      selectedImages.forEach((image, index) => {
         if (image) {
           formData.append('images', {
             uri: image.uri,
@@ -166,6 +166,9 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
         await api.post(`/moment/${id}/upload`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
+          },
+          transformRequest: (data) => {
+            return data;
           },
         });
 

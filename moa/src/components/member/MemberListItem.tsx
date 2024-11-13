@@ -57,11 +57,13 @@ const MemberListItem = ({
   isMe,
   isOwner,
 }: MemberListItemProps) => {
+  console.log(userImage);
+
   return (
     <Container itemSize={itemSize}>
       <StyledImage
         source={{uri: userImage}}
-        resizeMode="contain"
+        resizeMode="cover"
         itemSize={itemSize}
       />
       <NameLine>
