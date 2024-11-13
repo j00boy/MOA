@@ -58,7 +58,17 @@ export function setupBackgroundMessageHandler() {
   });
 }
 
-export const getFcmToken = async () => {
-  const fcmToken = await messaging().getToken();
-  console.log('[FCM Token] ', fcmToken);
+// export const getFcmToken = async () => {
+//   const fcmToken = await messaging().getToken();
+//   console.log('[FCM Token] ', fcmToken);
+// };
+export const getFcmToken = async (): Promise<string | null> => {
+  try {
+    const fcmToken = await messaging().getToken();
+    console.log('[FCM Token] ', fcmToken);
+    return fcmToken; // FCM 토큰을 명시적으로 반환
+  } catch (error) {
+    console.error('FCM 토큰 가져오기 실패:', error);
+    return null; // 오류가 발생하면 null 반환
+  }
 };

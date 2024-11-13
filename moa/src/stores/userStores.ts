@@ -71,13 +71,48 @@ export const useUserStore = create<UserStore>((set) => ({
   },
 
   // 디바이스 토큰 업데이트
+  // updateDeviceToken: async (deviceToken) => {
+  //   try {
+  //     await api.put('/user/device-token', {deviceToken});
+  //     set((state) => ({
+  //       user: state.user ? {...state.user, deviceToken} : null,
+  //     }));
+  //     console.log('디바이스 토큰 업데이트 성공');
+  //     console.log('넘어가는 정보?:', user);
+  //   } catch (error) {
+  //     console.error('디바이스 토큰 업데이트 실패:', error);
+  //   }
+  // },
   updateDeviceToken: async (deviceToken) => {
     try {
-      await api.put('/user/device-token', {deviceToken});
-      set((state) => ({
-        user: state.user ? {...state.user, deviceToken} : null,
-      }));
-      console.log('디바이스 토큰 업데이트 성공');
+      // 현재 상태에서 user 가져오기
+      set((state) => {
+        const user = state.user;
+        if (user && user.userId) {
+          const payload = {
+            userId: user.userId, // userId 포함
+            deviceToken, // deviceToken 포함
+          };
+
+          // 서버로 API 요청 전송
+          api
+            .put('/user/device-token', payload)
+            .then(() => {
+              console.log('디바이스 토큰 업데이트 성공');
+            })
+            .catch((error) => {
+              console.error('디바이스 토큰 업데이트 실패:', error);
+            });
+
+          // 상태 업데이트
+          return {
+            user: {...user, deviceToken},
+          };
+        } else {
+          console.warn('userId를 찾을 수 없습니다.');
+          return state;
+        }
+      });
     } catch (error) {
       console.error('디바이스 토큰 업데이트 실패:', error);
     }
