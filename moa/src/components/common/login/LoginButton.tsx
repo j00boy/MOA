@@ -6,10 +6,9 @@ import styled from 'styled-components/native';
 import {TextButton} from '../button/TextButton';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useAuthStore} from '../../../stores/authStores';
+import {useUserStore} from '../../../stores/userStores';
+import {getFcmToken} from '../../../utils/FirebaseSettings';
 import api from '../../../utils/api';
-// type LoginButtonProps = {
-//   onLoginSuccess: (kakaoToken: string) => void;
-// };
 
 const ButtonContainer = styled(TouchableOpacity)`
   flex-direction: row;
@@ -27,25 +26,11 @@ const ButtonText = styled(Text)`
   font-size: 16px;
   margin-left: 8px;
 `;
-// const LoginButton: React.FC<LoginButtonProps> = ({onLoginSuccess}) => {
-const LoginButton = () => {
-  // const handleKakaoLogin = async () => {
-  //   try {
-  //     const result = await kakaoLogin();
-  //     const kakaoToken = result.accessToken;
 
-  //     if (kakaoToken) {
-  //       onLoginSuccess(kakaoToken);
-  //     } else {
-  //       throw new Error('카카오 토큰 발급 못받음!');
-  //     }
-  //   } catch (error) {
-  //     console.error('카카오 로그인 실패', error);
-  //     Alert.alert('로그인 실패', '다시 시도해주세용');
-  //   }
-  // };
+const LoginButton = () => {
   const [result, setResult] = useState<string | null>(null);
   const {setAuthenticated, logout: storeLogout} = useAuthStore();
+  const {updateDeviceToken} = useUserStore();
 
   const signInWithKakao = async () => {
     try {
@@ -59,6 +44,12 @@ const LoginButton = () => {
         console.log('refresh토큰: ', token.refreshToken);
         // onLoginSuccess(kakaoToken);
         await sendTokenToBackend(kakaoToken);
+
+        const fcmToken = await getFcmToken();
+        if (fcmToken) {
+          await updateDeviceToken(fcmToken); // FCM 토큰을 백엔드로 업데이트
+          console.log('토큰 백엔드로 보냈당', fcmToken);
+        }
       } else {
         throw new Error('카카오 토큰 발급 못받음!');
       }
@@ -71,23 +62,6 @@ const LoginButton = () => {
   // 백엔드로 액세스 토큰 전송하고 JWT 받기
   const sendTokenToBackend = async (accessToken: string) => {
     try {
-      // const response = await fetch('https://your-backend-url.com/auth/kakao', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({accessToken}),
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error('JWT Token 받기 실패');
-      // }
-      // const data = await response.json();
-      // const jwtToken = data.token;
-
-      // 토큰 바디에 담아서 보내는 방법
-      // const response = await api.post('/auth/kakao', {accessToken});
-
       // 토큰 헤더에 담아서 백엔드로 보내기
       const response = await api.post(
         '/kakao',
