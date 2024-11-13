@@ -160,16 +160,21 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
             'Content-Type': 'multipart/form-data',
           },
         });
+
+        navigation.navigate('GroupDetail');
       } else {
         await api.post(`/moment/${id}/upload`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
+
+        navigation.navigate('MomentDetail', {momentId: id});
       }
+
+      Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
     } catch (error) {
-      console.error('Moment Upload Error:', error);
-      Alert.alert('사진 공유 실패', '');
+      Alert.alert('사진 공유 실패', '사진 공유 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
