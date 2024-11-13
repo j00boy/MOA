@@ -12,7 +12,7 @@ interface User {
   userImage: string;
   role: string;
   deviceToken: string;
-  faceEmbedding: string;
+  faceEmbedding: string | null;
 }
 
 interface GroupMember {
