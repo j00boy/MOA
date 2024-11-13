@@ -29,6 +29,13 @@ import Login from './src/screens/Login';
 import Toast from 'react-native-toast-message';
 import {LinkingOptions} from '@react-navigation/native';
 import {useAuthStore} from './src/stores/authStores';
+import {
+  requestUserPermission,
+  setupBackgroundMessageHandler,
+  setupForegroundMessageHandler,
+  getFcmToken,
+  requestNotificationPermission,
+} from './src/utils/FirebaseSettings';
 
 const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
@@ -112,16 +119,36 @@ const App = () => {
     const initAuthStatus = async () => {
       await checkAuthStatus(); // 로그인 상태 확인
       setLoading(false); // 로딩 완료
+      // await requestUserPermission();
+      // await setupForegroundMessageHandler();
+      // await setupBackgroundMessageHandler();
+      // await getFcmToken();
     };
     initAuthStatus();
   }, [checkAuthStatus]);
 
+  // Firebase 알림 권한 요청
+  // useEffect(() => {
+  //   const initFirebasePermissions = async () => {
+  //     await requestUserPermission();
+  //     setupForegroundMessageHandler();
+  //     setupBackgroundMessageHandler();
+  //     await getFcmToken();
+  //   };
+  //   initFirebasePermissions();
+  // }, []);
+  useEffect(() => {
+    requestUserPermission();
+    setupForegroundMessageHandler();
+    setupBackgroundMessageHandler();
+    getFcmToken();
+    requestNotificationPermission();
+  }, []);
+  // const navigationRef =
+  //   useRef<NavigationContainerRef<HomeStackParamList>>(null);
   if (loading) {
     return null; // 로딩 중일 때 빈 화면 또는 로딩 스피너를 보여줄 수 있습니다.
   }
-
-  // const navigationRef =
-  //   useRef<NavigationContainerRef<HomeStackParamList>>(null);
 
   return (
     <ThemeProvider theme={theme}>
