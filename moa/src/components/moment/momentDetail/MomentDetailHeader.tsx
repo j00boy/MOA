@@ -1,5 +1,5 @@
 import {Alert, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {MomentInfoDetail} from '../../../types/moment';
 import styled, {useTheme} from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -78,12 +78,17 @@ const TextContent = styled.Text`
 
 interface MomentDetailHeaderProps {
   momentInfoDetail: MomentInfoDetail;
+  onLoadingChange: (loading: boolean) => void;
 }
 
-const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
-  const userId = useAuthStore((state) => state.userId);
+const MomentDetailHeader = ({
+  momentInfoDetail,
+  onLoadingChange,
+}: MomentDetailHeaderProps) => {
+  const userId = useAuthStore((state: {userId: unknown}) => state.userId);
   const [isOptionModalVisible, setOptionModalVisible] = useState(false);
   const [isPinModalVisible, setPinModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<AppHeaderNavigationProp>();
 
@@ -94,6 +99,10 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
   const togglePinModal = () => {
     setPinModalVisible(!isPinModalVisible);
   };
+
+  useEffect(() => {
+    onLoadingChange(loading);
+  }, [loading, onLoadingChange]);
 
   const options =
     momentInfoDetail.momentOwner.userId === userId
@@ -107,7 +116,20 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
           {id: 'put', label: '순간 나가기'},
         ];
 
+  const handleShare = () => {
+    onShare(
+      `${momentInfoDetail.momentName} 순간`,
+      `https://k11a602.p.ssafy.io/moment/${momentInfoDetail.id}`,
+    );
+
+    // sendFeedMessage(
+    //   `${momentInfoDetail.momentName} 순간`,
+    //   `moment/${momentInfoDetail.id}`,
+    // )
+  };
+
   const handleDeleteMoment = async () => {
+    setLoading(true);
     try {
       await api.delete(`/moment/${momentInfoDetail.id}`);
       Alert.alert(
@@ -117,6 +139,24 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
       navigation.navigate('Home');
     } catch {
       Alert.alert('순간 삭제 실패', '순간 삭제 도중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExitMoment = async () => {
+    setLoading(true);
+    try {
+      await api.put(`/moment/${momentInfoDetail.id}`);
+      Alert.alert(
+        '순간 나가기 완료',
+        `${momentInfoDetail.momentName} 순간을 나갔습니다.`,
+      );
+      navigation.navigate('Home');
+    } catch {
+      Alert.alert('순간 나가기 실패', '순간 탈퇴 도중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -141,6 +181,8 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
       toggleOptionModal();
       handleDeleteMoment();
     } else if (optionId === 'put') {
+      toggleOptionModal();
+      handleExitMoment();
     }
   };
 
@@ -151,23 +193,7 @@ const MomentDetailHeader = ({momentInfoDetail}: MomentDetailHeaderProps) => {
       <TitleLine>
         <LeftTime>남은 시간 타이머</LeftTime>
         <IconContainer>
-          {/* <TouchableOpacity
-            onPress={() =>
-              onShare(
-                `${momentInfoDetail.momentName} 순간`,
-                `moa://moment/${momentInfoDetail.id}`,
-              )
-            }
-          > */}
-
-          <TouchableOpacity
-            onPress={() =>
-              sendFeedMessage(
-                `${momentInfoDetail.momentName} 순간`,
-                `moment/${momentInfoDetail.id}`,
-              )
-            }
-          >
+          <TouchableOpacity onPress={handleShare}>
             <Icon
               name="share-social-sharp"
               size={22}

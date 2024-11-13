@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useCallback, useEffect, useState} from 'react';
 import ScreenContainer from '../../components/common/ScreenContainer';
@@ -15,7 +16,7 @@ import AlbumContainer from '../../components/album/AlbumContainer';
 import api from '../../utils/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import {MomentInfoDetail} from '../../types/moment';
-import {Alert} from 'react-native';
+import {Alert, RefreshControl} from 'react-native';
 import PinPostModal from '../../components/common/modal/PinPostModal';
 import {AxiosError} from 'axios';
 
@@ -44,12 +45,17 @@ const MomentDetail: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [isPinModalVisible, setIsPinModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const momentId = route.params.momentId;
 
-  const toggleModal = useCallback(() => {
-    setIsPinModalVisible((prev) => !prev);
-  }, []);
+  const toggleModal = () => {
+    setIsPinModalVisible(!isPinModalVisible);
+  };
+
+  const handleLoadingChange = (isLoading: boolean) => {
+    setLoading(isLoading);
+  };
 
   const getMomentDetail = useCallback(async () => {
     setLoading(true);
@@ -60,6 +66,7 @@ const MomentDetail: React.FC = () => {
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.data.status === 403) {
         console.log(error.response.data.status);
+        console.log(momentId);
         toggleModal();
       } else {
         Alert.alert('순간 조회 오류', '나의 순간 조회 중 오류가 발생했습니다.');
@@ -67,7 +74,7 @@ const MomentDetail: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [momentId, toggleModal]);
+  }, [momentId]);
 
   useEffect(() => {
     getMomentDetail();
@@ -89,13 +96,32 @@ const MomentDetail: React.FC = () => {
     }
   }, [momentInfoDetail, momentInfoDetail.momentName, navigation]);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, []);
+
+  useEffect(() => {
+    if (refreshing) {
+      getMomentDetail();
+      onRefresh();
+    }
+  }, [refreshing, onRefresh]);
+
   return (
     <ScreenContainer>
       {loading ? (
-        <LoadingSpinner />
+        <LoadingSpinner isDark={false} />
       ) : (
-        <Container>
-          <MomentDetailHeader momentInfoDetail={momentInfoDetail} />
+        <Container
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <MomentDetailHeader
+            momentInfoDetail={momentInfoDetail}
+            onLoadingChange={handleLoadingChange}
+          />
           <Partition />
           <MemberList
             owner={momentInfoDetail.momentOwner}
@@ -106,10 +132,10 @@ const MomentDetail: React.FC = () => {
         </Container>
       )}
       <PinPostModal
-        momentId={momentInfoDetail.id}
+        momentId={momentId}
         isModalVisible={isPinModalVisible}
         toggleModal={toggleModal}
-        momentPin={momentInfoDetail.momentPin}
+        onSuccess={getMomentDetail}
       />
     </ScreenContainer>
   );

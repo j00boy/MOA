@@ -3,7 +3,7 @@ import React from 'react';
 import styled, {useTheme} from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
-import {StackHeaderNavigationProp} from '../../../types/screen';
+import {AppNavigationProp} from '../../../types/screen';
 
 const Container = styled.View`
   height: 70px;
@@ -31,13 +31,21 @@ interface StackHeaderProps {
 }
 
 export default function StackHeader({title}: StackHeaderProps) {
-  const navigation = useNavigation<StackHeaderNavigationProp>();
+  const navigation = useNavigation<AppNavigationProp>();
   const theme = useTheme();
+
+  const handleBackPress = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('HomeStack', {screen: 'Home'});
+    }
+  };
 
   return (
     <Container>
       <IconWrapper>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={handleBackPress}>
           <Icon
             name="chevron-back"
             size={30}
