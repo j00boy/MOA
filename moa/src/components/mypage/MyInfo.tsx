@@ -91,7 +91,7 @@ const MyInfo = () => {
   useEffect(() => {
     fetchUser();
     fetchUserGroups();
-  }, [fetchUser]);
+  }, [fetchUser, fetchUserGroups]);
 
   useEffect(() => {
     if (user) {
