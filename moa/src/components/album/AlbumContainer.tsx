@@ -293,6 +293,7 @@ const AlbumContainer = ({
         ))}
       </StyledModal>
       <PhotoList
+        images={images}
         isSelectMode={selectMode}
         onSelectionChange={setSelectedPhotos}
       />
