@@ -1,13 +1,15 @@
 import React, {useRef, useState} from 'react';
 import StyledModal from './StyledModal';
 import styled from 'styled-components/native';
-import {Alert, TextInput} from 'react-native';
+import {
+  Alert,
+  NativeSyntheticEvent,
+  TextInput,
+  TextInputKeyPressEventData,
+} from 'react-native';
 import {TextButton} from '../button/TextButton';
 import api from '../../../utils/api';
-import {
-  AppNavigationProp,
-  HomeScreenNavigationProp,
-} from '../../../types/screen';
+import {AppNavigationProp} from '../../../types/screen';
 import {useNavigation} from '@react-navigation/native';
 
 const ContentContainer = styled.View`
@@ -60,23 +62,45 @@ interface PinModalProps {
   momentId: string;
   isModalVisible: boolean;
   toggleModal: () => void;
+  onSuccess: () => void;
 }
 
 const PinPostModal = ({
   momentId,
   isModalVisible,
   toggleModal,
+  onSuccess,
 }: PinModalProps) => {
   const [pinNum, setPinNum] = useState<string>('');
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
   const handleChangeText = (text: string, index: number) => {
-    const newPin = pinNum.split('');
-    newPin[index] = text;
-    setPinNum(newPin.join(''));
+    if (text.length > 1) {
+      // 붙여넣기 처리
+      const newPin = text.slice(0, 6).split('');
+      setPinNum(newPin.join(''));
+      newPin.forEach((char, i) => {
+        inputRefs.current[i]?.setNativeProps({text: char});
+      });
+      inputRefs.current[5]?.focus();
+    } else {
+      // 개별 입력 처리
+      const newPin = pinNum.split('');
+      newPin[index] = text;
+      setPinNum(newPin.join(''));
 
-    if (text && index < 5) {
-      inputRefs.current[index + 1]?.focus(); // Move to next input on input
+      if (text && index < 5) {
+        inputRefs.current[index + 1]?.focus(); // 다음 input으로 이동
+      }
+    }
+  };
+
+  const handleKeyPress = (
+    event: NativeSyntheticEvent<TextInputKeyPressEventData>,
+    index: number,
+  ) => {
+    if (event.nativeEvent.key === 'Backspace' && index > 0 && !pinNum[index]) {
+      inputRefs.current[index - 1]?.focus(); // 이전 input으로 이동
     }
   };
 
@@ -87,10 +111,9 @@ const PinPostModal = ({
 
   const handleSubmitPin = async () => {
     try {
-      console.log(momentId);
-      console.log(pinNum);
       await api.post(`/moment/${momentId}?PIN=${pinNum}`);
       toggleModal();
+      onSuccess();
     } catch {
       Alert.alert('PIN번호 오류', 'PIN번호가 일치하지 않습니다.');
     }
@@ -112,8 +135,10 @@ const PinPostModal = ({
               <PinInput
                 ref={(ref) => (inputRefs.current[index] = ref)}
                 maxLength={1}
+                autoCapitalize="none"
                 value={pinNum[index] || ''}
                 onChangeText={(text) => handleChangeText(text, index)}
+                onKeyPress={(e) => handleKeyPress(e, index)}
               />
             </NumberContainer>
           ))}

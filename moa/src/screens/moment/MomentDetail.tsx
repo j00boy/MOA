@@ -53,6 +53,10 @@ const MomentDetail: React.FC = () => {
     setIsPinModalVisible(!isPinModalVisible);
   };
 
+  const handleLoadingChange = (isLoading: boolean) => {
+    setLoading(isLoading);
+  };
+
   const getMomentDetail = useCallback(async () => {
     setLoading(true);
 
@@ -100,7 +104,7 @@ const MomentDetail: React.FC = () => {
   useEffect(() => {
     if (refreshing) {
       getMomentDetail();
-      onRefresh(); // 새로고침 종료
+      onRefresh();
     }
   }, [refreshing, onRefresh]);
 
@@ -114,7 +118,10 @@ const MomentDetail: React.FC = () => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
-          <MomentDetailHeader momentInfoDetail={momentInfoDetail} />
+          <MomentDetailHeader
+            momentInfoDetail={momentInfoDetail}
+            onLoadingChange={handleLoadingChange}
+          />
           <Partition />
           <MemberList
             owner={momentInfoDetail.momentOwner}
@@ -128,6 +135,7 @@ const MomentDetail: React.FC = () => {
         momentId={momentId}
         isModalVisible={isPinModalVisible}
         toggleModal={toggleModal}
+        onSuccess={getMomentDetail}
       />
     </ScreenContainer>
   );
