@@ -16,7 +16,7 @@ import AlbumContainer from '../../components/album/AlbumContainer';
 import api from '../../utils/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import {MomentInfoDetail} from '../../types/moment';
-import {Alert} from 'react-native';
+import {Alert, RefreshControl} from 'react-native';
 import PinPostModal from '../../components/common/modal/PinPostModal';
 import {AxiosError} from 'axios';
 
@@ -45,6 +45,7 @@ const MomentDetail: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [isPinModalVisible, setIsPinModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const momentId = route.params.momentId;
 
@@ -91,12 +92,28 @@ const MomentDetail: React.FC = () => {
     }
   }, [momentInfoDetail, momentInfoDetail.momentName, navigation]);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 1000);
+  }, []);
+
+  useEffect(() => {
+    if (refreshing) {
+      getMomentDetail();
+      onRefresh(); // 새로고침 종료
+    }
+  }, [refreshing, onRefresh]);
+
   return (
     <ScreenContainer>
       {loading ? (
-        <LoadingSpinner />
+        <LoadingSpinner isDark={false} />
       ) : (
-        <Container>
+        <Container
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           <MomentDetailHeader momentInfoDetail={momentInfoDetail} />
           <Partition />
           <MemberList

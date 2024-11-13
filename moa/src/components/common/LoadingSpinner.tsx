@@ -10,7 +10,10 @@ const LoadingOverlay = styled.View<{isDark: boolean}>`
   bottom: 0;
   justify-content: center;
   align-items: center;
-  ${({isDark}) => isDark && 'background-color: rgba(0, 0, 0, 0.5);'}
+  ${({isDark}) =>
+    isDark
+      ? 'background-color: rgba(0, 0, 0, 0.5);'
+      : 'background-color: white'}
 `;
 
 interface LoadingSpinnerProps {
