@@ -1,14 +1,41 @@
-import {RouteProp} from '@react-navigation/native';
+import {NavigatorScreenParams, RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {GroupAddInfo} from './group';
 import {MomentAddInfo} from './moment';
+
+export type AppParamList = RootStackParamList & {
+  Bottom: NavigatorScreenParams<BottomTabParamList>;
+  HomeStack: NavigatorScreenParams<HomeStackParamList>;
+  MyPageStack: NavigatorScreenParams<MyPageStackParamList>;
+  Add: undefined;
+  GroupAdd: undefined;
+  MomentAdd: undefined;
+  Notification: undefined;
+  Login: undefined;
+};
+
+export type RootStackParamList = {
+  Bottom: NavigatorScreenParams<BottomTabParamList> | undefined;
+  PhotoDetail: {uri: string};
+  Add: undefined;
+  GroupAdd: undefined;
+  MomentAdd: undefined;
+  Notification: undefined;
+  Login: undefined;
+};
+
+export type BottomTabParamList = {
+  HomeStack: undefined;
+  MyPageStack: undefined;
+};
+
+export type AppNavigationProp = StackNavigationProp<AppParamList>;
 
 // HomeStack의 ParamList 타입 정의
 export type HomeStackParamList = {
   Home: undefined;
   GroupDetail: {groupInfo: {groupId: string; groupName: string}};
   MomentDetail: {momentId: string};
-  // 여기에 스크린 추가
 };
 
 export type GroupDetailRouteProp = RouteProp<HomeStackParamList, 'GroupDetail'>;

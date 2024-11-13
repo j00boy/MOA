@@ -1,10 +1,15 @@
 import React, {useRef, useState} from 'react';
 import StyledModal from './StyledModal';
 import styled from 'styled-components/native';
-import {Alert, TextInput} from 'react-native';
+import {
+  Alert,
+  NativeSyntheticEvent,
+  TextInput,
+  TextInputKeyPressEventData,
+} from 'react-native';
 import {TextButton} from '../button/TextButton';
 import api from '../../../utils/api';
-import {HomeScreenNavigationProp} from '../../../types/screen';
+import {AppNavigationProp} from '../../../types/screen';
 import {useNavigation} from '@react-navigation/native';
 
 const ContentContainer = styled.View`
@@ -55,46 +60,66 @@ const ButtonContainer = styled.View`
 
 interface PinModalProps {
   momentId: string;
-  momentPin: string;
   isModalVisible: boolean;
   toggleModal: () => void;
+  onSuccess: () => void;
 }
 
 const PinPostModal = ({
   momentId,
-  momentPin,
   isModalVisible,
   toggleModal,
+  onSuccess,
 }: PinModalProps) => {
   const [pinNum, setPinNum] = useState<string>('');
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
   const handleChangeText = (text: string, index: number) => {
-    const newPin = pinNum.split('');
-    newPin[index] = text;
-    setPinNum(newPin.join(''));
+    if (text.length > 1) {
+      // 붙여넣기 처리
+      const newPin = text.slice(0, 6).split('');
+      setPinNum(newPin.join(''));
+      newPin.forEach((char, i) => {
+        inputRefs.current[i]?.setNativeProps({text: char});
+      });
+      inputRefs.current[5]?.focus();
+    } else {
+      // 개별 입력 처리
+      const newPin = pinNum.split('');
+      newPin[index] = text;
+      setPinNum(newPin.join(''));
 
-    if (text && index < 5) {
-      inputRefs.current[index + 1]?.focus(); // Move to next input on input
+      if (text && index < 5) {
+        inputRefs.current[index + 1]?.focus(); // 다음 input으로 이동
+      }
+    }
+  };
+
+  const handleKeyPress = (
+    event: NativeSyntheticEvent<TextInputKeyPressEventData>,
+    index: number,
+  ) => {
+    if (event.nativeEvent.key === 'Backspace' && index > 0 && !pinNum[index]) {
+      inputRefs.current[index - 1]?.focus(); // 이전 input으로 이동
     }
   };
 
   const handleGoback = () => {
     toggleModal();
-    navigation.goBack();
+    navigation.navigate('HomeStack', {screen: 'Home', params: undefined});
   };
 
   const handleSubmitPin = async () => {
-    if (momentPin === pinNum) {
+    try {
       await api.post(`/moment/${momentId}?PIN=${pinNum}`);
       toggleModal();
-      return;
+      onSuccess();
+    } catch {
+      Alert.alert('PIN번호 오류', 'PIN번호가 일치하지 않습니다.');
     }
-
-    Alert.alert('PIN번호 오류', 'PIN번호가 일치하지 않습니다.');
   };
 
-  const navigation = useNavigation<HomeScreenNavigationProp>();
+  const navigation = useNavigation<AppNavigationProp>();
 
   return (
     <StyledModal
@@ -110,8 +135,10 @@ const PinPostModal = ({
               <PinInput
                 ref={(ref) => (inputRefs.current[index] = ref)}
                 maxLength={1}
+                autoCapitalize="none"
                 value={pinNum[index] || ''}
                 onChangeText={(text) => handleChangeText(text, index)}
+                onKeyPress={(e) => handleKeyPress(e, index)}
               />
             </NumberContainer>
           ))}

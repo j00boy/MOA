@@ -1,9 +1,10 @@
 import {shareFeedTemplate} from '@react-native-kakao/share';
-import React, {useEffect} from 'react';
 
 export const sendFeedMessage = async (name: string, id: string) => {
   console.log('공유 버튼 눌렀음');
-  const url = `https://k11a602.p.ssafy.io/${id}`;
+  const url = `moa://${id}`;
+
+  console.log(url);
 
   try {
     await shareFeedTemplate({
@@ -37,8 +38,8 @@ export const sendFeedMessage = async (name: string, id: string) => {
           {
             title: '앱에서 열기',
             link: {
-              androidExecutionParams: {url: id}, // 객체 형식으로 변경
-              iosExecutionParams: {url: id}, // 객체 형식으로 변경
+              androidExecutionParams: {id: id}, // 객체 형식으로 변경
+              iosExecutionParams: {id: id}, // 객체 형식으로 변경
             },
           },
         ],

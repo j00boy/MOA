@@ -4,24 +4,27 @@ import PhotoList from './PhotoList';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import StyledModal from '../common/modal/StyledModal';
 import RNFS from 'react-native-fs';
-import {
-  Alert,
-  PermissionsAndroid,
-  Platform,
-  ActivityIndicator,
-} from 'react-native';
+import {Alert, PermissionsAndroid, Platform} from 'react-native';
 import uuid from 'react-native-uuid';
 import LoadingSpinner from '../common/LoadingSpinner';
+import {Images} from '../../types/moment';
 
 const Container = styled.View`
   width: 100%;
   padding-bottom: 100px;
 `;
 
+const RowLine = styled.View`
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+`;
+
 const TitleLine = styled.View`
   flex-direction: row;
   align-items: center;
-  margin-bottom: 15px;
 `;
 
 const Title = styled.Text`
@@ -32,6 +35,23 @@ const Title = styled.Text`
 
 const TitleNum = styled(Title)<{darkColor: string}>`
   color: ${({darkColor, theme}) => darkColor || theme.colors.maindarkorange};
+`;
+
+const SelectButton = styled.TouchableOpacity`
+  width: 90px;
+  height: 30px;
+  background-color: ${({theme}) => theme.colors.mediumgray};
+  border-radius: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 7px;
+`;
+
+const SelectButtonText = styled.Text`
+  font-family: SCDream4;
+  font-size: 13px;
+  color: ${({theme}) => theme.colors.deepgray};
 `;
 
 const ButtonLine = styled.View`
@@ -71,7 +91,7 @@ const DownloadButton = styled.TouchableOpacity<{
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
+  padding: 0 7px;
 `;
 
 const DownloadButtonText = styled.Text<{
@@ -101,6 +121,7 @@ interface AlbumContainerProps {
   darkColor?: string;
   groupId?: string;
   momentId?: string;
+  images: Images;
 }
 
 const AlbumContainer = ({
@@ -110,7 +131,9 @@ const AlbumContainer = ({
   darkColor = '',
   groupId,
   momentId,
+  images,
 }: AlbumContainerProps) => {
+  const [selectMode, setSelectMode] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
   const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -122,6 +145,10 @@ const AlbumContainer = ({
     {id: 'scenary', label: '풍경'},
     {id: 'food', label: '음식'},
   ];
+
+  const toggleSelectMode = () => {
+    setSelectMode(!selectMode);
+  };
 
   const toggleOptionModal = () => {
     setIsOptionModalVisible(!isOptionModalVisible);
@@ -220,10 +247,22 @@ const AlbumContainer = ({
 
   return (
     <Container>
-      <TitleLine>
-        <Title>{title}</Title>
-        <TitleNum darkColor={darkColor}>255장</TitleNum>
-      </TitleLine>
+      <RowLine>
+        <TitleLine>
+          <Title>{title}</Title>
+          <TitleNum darkColor={darkColor}>{images.thumbImgs.length}장</TitleNum>
+        </TitleLine>
+        <SelectButton onPress={toggleSelectMode}>
+          <Icon
+            name="expand-circle-down"
+            size={15}
+            color={theme.colors.deepgray}
+          />
+          <SelectButtonText>
+            {selectMode ? '선택취소' : '사진선택'}
+          </SelectButtonText>
+        </SelectButton>
+      </RowLine>
       <ButtonLine>
         <OptionButton onPress={toggleOptionModal}>
           <Icon name="monochrome-photos" size={15} color={theme.colors.black} />
@@ -253,7 +292,11 @@ const AlbumContainer = ({
           </ModalItemContainer>
         ))}
       </StyledModal>
-      <PhotoList onSelectionChange={setSelectedPhotos} />
+      <PhotoList
+        images={images}
+        isSelectMode={selectMode}
+        onSelectionChange={setSelectedPhotos}
+      />
       {loading && <LoadingSpinner />}
     </Container>
   );

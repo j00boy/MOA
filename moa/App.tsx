@@ -23,8 +23,12 @@ import MomentAdd from './src/screens/moment/MomentAdd';
 import MomentDetail from './src/screens/moment/MomentDetail';
 import AppHeader from './src/components/common/header/AppHeader';
 import StackHeader from './src/components/common/header/StackHeader';
-import {StatusBar} from 'react-native';
-import {HomeStackParamList, MyPageStackParamList} from './src/types/screen';
+import {Linking, StatusBar} from 'react-native';
+import {
+  AppParamList,
+  HomeStackParamList,
+  MyPageStackParamList,
+} from './src/types/screen';
 import Login from './src/screens/Login';
 import Toast from 'react-native-toast-message';
 import {LinkingOptions} from '@react-navigation/native';
@@ -36,6 +40,8 @@ import {
   getFcmToken,
   requestNotificationPermission,
 } from './src/utils/FirebaseSettings';
+import PhotoDetail from './src/screens/PhotoDetail';
+
 
 const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
@@ -96,13 +102,22 @@ const TabNavigator: React.FC = () => (
 );
 
 // 딥링크 설정
-const linking: LinkingOptions<HomeStackParamList> = {
-  prefixes: ['moa://'],
+const linking: LinkingOptions<AppParamList> = {
+  prefixes: ['moa://', 'https://k11a602.p.ssafy.io'],
   config: {
     screens: {
-      Home: 'home',
-      GroupDetail: 'group/:groupId',
-      MomentDetail: 'moment/:momentId',
+      Bottom: {
+        screens: {
+          HomeStack: {
+            screens: {
+              Home: 'home',
+              GroupDetail: 'group/:groupId',
+              MomentDetail: 'moment/:momentId',
+            },
+          },
+          MyPageStack: 'mypage',
+        },
+      },
     },
   },
 };
@@ -114,6 +129,36 @@ const StyledSafeAreaView = styled.SafeAreaView`
 const App = () => {
   const {isAuthenticated, checkAuthStatus} = useAuthStore();
   const [loading, setLoading] = useState(true);
+
+  const navigationRef = useRef<NavigationContainerRef<AppParamList>>(null);
+
+  // 링크 열기 시 실행할 메소드 정의
+  const handleOpenURL = (event: {url: string}) => {
+    const {url} = event;
+    console.log('Opened from link:', url);
+
+    if (url.includes('moment')) {
+      const momentId = url.split('/').pop();
+      if (momentId) {
+        navigationRef.current?.navigate('HomeStack', {
+          screen: 'MomentDetail',
+          params: {momentId},
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    Linking.getInitialURL().then((url) => {
+      if (url) handleOpenURL({url});
+    });
+
+    const urlListener = Linking.addListener('url', handleOpenURL);
+
+    return () => {
+      urlListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const initAuthStatus = async () => {
@@ -147,14 +192,14 @@ const App = () => {
   // const navigationRef =
   //   useRef<NavigationContainerRef<HomeStackParamList>>(null);
   if (loading) {
-    return null; // 로딩 중일 때 빈 화면 또는 로딩 스피너를 보여줄 수 있습니다.
+    return null;
   }
 
   return (
     <ThemeProvider theme={theme}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <StyledSafeAreaView>
-        <NavigationContainer linking={linking}>
+        <NavigationContainer linking={linking} ref={navigationRef}>
           <RootStack.Navigator>
             {isAuthenticated ? (
               <>
@@ -162,6 +207,14 @@ const App = () => {
                   name="Bottom"
                   component={TabNavigator}
                   options={{headerShown: false}}
+                />
+                <RootStack.Screen
+                  name="PhotoDetail"
+                  component={PhotoDetail}
+                  options={() => ({
+                    header: () => <StackHeader title="사진 상세보기" />,
+                    tabBarStyle: {display: 'none'},
+                  })}
                 />
                 <RootStack.Screen
                   name="Add"
