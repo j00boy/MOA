@@ -40,6 +40,7 @@ const MomentDetail: React.FC = () => {
     momentName: '',
     momentDescription: '',
     momentOwner: {userId: '', nickname: '', imageSrc: ''},
+    images: {thumbImgs: [], orgImgs: []},
     createdAt: '',
     uploadOption: '',
   });
@@ -128,7 +129,11 @@ const MomentDetail: React.FC = () => {
             memberList={momentInfoDetail.members}
           />
           <Partition />
-          <AlbumContainer title="공유된 사진" momentId={momentId} />
+          <AlbumContainer
+            title="공유된 사진"
+            momentId={momentId}
+            images={momentInfoDetail.images}
+          />
         </Container>
       )}
       <PinPostModal

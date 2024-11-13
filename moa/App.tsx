@@ -33,6 +33,7 @@ import Login from './src/screens/Login';
 import Toast from 'react-native-toast-message';
 import {LinkingOptions} from '@react-navigation/native';
 import {useAuthStore} from './src/stores/authStores';
+import PhotoDetail from './src/screens/PhotoDetail';
 
 const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
@@ -175,6 +176,14 @@ const App = () => {
                   name="Bottom"
                   component={TabNavigator}
                   options={{headerShown: false}}
+                />
+                <RootStack.Screen
+                  name="PhotoDetail"
+                  component={PhotoDetail}
+                  options={() => ({
+                    header: () => <StackHeader title="사진 상세보기" />,
+                    tabBarStyle: {display: 'none'},
+                  })}
                 />
                 <RootStack.Screen
                   name="Add"

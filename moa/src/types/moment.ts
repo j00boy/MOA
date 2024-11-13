@@ -11,6 +11,11 @@ export type Member = {
   imageSrc: string;
 };
 
+export type Images = {
+  thumbImgs: string[];
+  orgImgs: string[];
+};
+
 export type MomentInfoDetail = {
   id: string;
   groupId: string;
@@ -19,8 +24,9 @@ export type MomentInfoDetail = {
   momentName: string;
   momentDescription: string;
   momentOwner: Member;
-  createdAt: string;
+  images: Images;
   uploadOption: string;
+  createdAt: string;
 };
 
 export type MomentAddInfo = {

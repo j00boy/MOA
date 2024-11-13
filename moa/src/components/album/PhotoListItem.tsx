@@ -1,6 +1,8 @@
 import React from 'react';
 import styled, {useTheme} from 'styled-components/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {useNavigation} from '@react-navigation/native';
+import {AppNavigationProp} from '../../types/screen';
 
 const Container = styled.TouchableOpacity<{
   itemSize: number;
@@ -36,6 +38,7 @@ interface PhotoListItemProps {
   onToggleSelect: () => void;
   itemSize: number;
   isLastInRow: boolean;
+  isSelectMode?: boolean;
 }
 
 const PhotoListItem = ({
@@ -44,14 +47,24 @@ const PhotoListItem = ({
   onToggleSelect,
   itemSize,
   isLastInRow,
+  isSelectMode = false,
 }: PhotoListItemProps) => {
   const theme = useTheme();
+  const navigation = useNavigation<AppNavigationProp>();
+
+  const handleSelectPhoto = () => {
+    if (isSelectMode) {
+      onToggleSelect();
+    } else {
+      navigation.navigate('PhotoDetail', {uri: uri});
+    }
+  };
 
   return (
     <Container
       itemSize={itemSize}
       isLastInRow={isLastInRow}
-      onPress={onToggleSelect}
+      onPress={handleSelectPhoto}
     >
       <StyledImage
         itemSize={itemSize}
@@ -60,11 +73,13 @@ const PhotoListItem = ({
         }}
         resizeMode="cover"
       />
-      <CheckButton>
-        {isSelected && (
-          <Icon name="check" size={10} color={theme.colors.deepgray} />
-        )}
-      </CheckButton>
+      {isSelectMode && (
+        <CheckButton>
+          {isSelected && (
+            <Icon name="check" size={10} color={theme.colors.deepgray} />
+          )}
+        </CheckButton>
+      )}
     </Container>
   );
 };
