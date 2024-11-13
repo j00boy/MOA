@@ -57,8 +57,6 @@ const MemberListItem = ({
   isMe,
   isOwner,
 }: MemberListItemProps) => {
-  console.log(userImage);
-
   return (
     <Container itemSize={itemSize}>
       <StyledImage
