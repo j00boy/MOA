@@ -10,10 +10,14 @@ const Container = styled.View`
 `;
 
 interface PhotoListProps {
+  isSelectMode?: boolean;
   onSelectionChange: (selectedPhotos: string[]) => void;
 }
 
-const PhotoList = ({onSelectionChange}: PhotoListProps) => {
+const PhotoList = ({
+  isSelectMode = false,
+  onSelectionChange,
+}: PhotoListProps) => {
   const [containerWidth, setContainerWidth] = useState(0);
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
 
@@ -87,6 +91,7 @@ const PhotoList = ({onSelectionChange}: PhotoListProps) => {
           onToggleSelect={() => toggleSelect(photo.uri)}
           itemSize={itemSize}
           isLastInRow={(index + 1) % numColumns === 0}
+          isSelectMode={isSelectMode}
         />
       ))}
     </Container>
