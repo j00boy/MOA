@@ -1,14 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import styled, {useTheme} from 'styled-components/native';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {Shadow} from 'react-native-shadow-2';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {Asset, launchImageLibrary} from 'react-native-image-picker';
 import {Alert} from 'react-native';
 import {GroupDetailRouteProp, MomentDetailRouteProp} from '../../types/screen';
 import {useRoute} from '@react-navigation/native';
 import api from '../../utils/api';
+import LoadingSpinner from './LoadingSpinner';
+
+const MAX_IMAGES = 30;
+const MAX_IMAGE_SIZE_MB = 10;
 
 const Container = styled.View`
   position: absolute;
@@ -69,158 +73,169 @@ const ShareButton = styled.TouchableOpacity`
 `;
 
 const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
+  const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
   const handleUploadPress = async () => {
-    const route = state.routes[state.index];
-    const screenName = route.name;
-
     const result = await launchImageLibrary({
       mediaType: 'photo',
-      selectionLimit: 0,
+      selectionLimit: MAX_IMAGES,
     });
     if (result.didCancel || !result.assets || result.assets.length === 0) {
       return;
     }
 
-    const selectedImages = result.assets;
+    const selectedImages = result.assets
+      .filter((image) => {
+        if (
+          !image.fileSize ||
+          image.fileSize > MAX_IMAGE_SIZE_MB * 1024 * 1024
+        ) {
+          Alert.alert(
+            '사진 용량 초과',
+            `10MB 이하의 사진만 업로드할 수 있습니다.`,
+          );
+          return false;
+        }
+        return true;
+      })
+      .slice(0, MAX_IMAGES);
 
-    for (const image of selectedImages) {
-      if (image.uri) {
-        if (screenName === 'HomeStack' && route.state?.index !== undefined) {
-          const nestedRoute = route.state?.routes[route.state.index];
-          if (nestedRoute && nestedRoute.name === 'GroupDetail') {
-            const params = nestedRoute.params as GroupDetailRouteProp['params'];
-            if (params?.groupInfo?.groupId) {
-              // GroupDetail에 있을 때 업로드 로직
-              uploadImageToGroup(params.groupInfo.groupId, image.uri);
-            }
-          } else if (nestedRoute && nestedRoute.name === 'MomentDetail') {
-            const params =
-              nestedRoute.params as MomentDetailRouteProp['params'];
-            if (params?.momentId) {
-              // MomentDetail에 있을 때 업로드 로직
-              uploadImageToMoment(params.momentId, image.uri);
-            }
-          } else {
-            // Home으로 이동 -> 나중에 Home 선택모드로 이동
-            navigation.navigate('Home');
+    if (selectedImages) {
+      const currentRoute = state.routes[state.index];
+      const screenName = currentRoute.name;
+
+      if (
+        screenName === 'HomeStack' &&
+        currentRoute.state?.index !== undefined
+      ) {
+        const nestedRoute =
+          currentRoute.state?.routes[currentRoute.state.index];
+        if (nestedRoute?.name === 'GroupDetail') {
+          const params = nestedRoute.params as GroupDetailRouteProp['params'];
+          if (params?.groupInfo?.groupId) {
+            uploadImage(true, params.groupInfo.groupId, selectedImages);
+          }
+        } else if (nestedRoute?.name === 'MomentDetail') {
+          const params = nestedRoute.params as MomentDetailRouteProp['params'];
+          if (params?.momentId) {
+            uploadImage(false, params.momentId, selectedImages);
           }
         } else {
-          // 다른 탭에서도 Home 선택모드로 이동
           navigation.navigate('Home');
         }
       } else {
-        console.log('uri 오류');
+        navigation.navigate('Home');
       }
+    } else {
+      console.log('uri 오류');
     }
   };
 
-  const uploadImageToGroup = async (groupId: string, imageUri: string) => {
+  const uploadImage = async (
+    isGroup: boolean,
+    id: string,
+    selectedImages: Asset[],
+  ) => {
     try {
-      const formData = new FormData();
-      formData.append('image', {
-        uri: imageUri,
-        type: 'image/jpeg',
-        name: 'upload.jpg',
-      });
-      console.log('api 진입');
-      // 나중에 api 수정 예정
-      const response = await fetch(`YOUR_SERVER_URL/groups/${groupId}/upload`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-      });
-      if (response.ok) {
-        Alert.alert('사진 공유 완료', '');
-      } else {
-        Alert.alert('사진 공유 실패', '');
-      }
-    } catch (error) {
-      console.error('Group Upload Error:', error);
-      Alert.alert('사진 공유 실패', '');
-    }
-  };
+      setLoading(true);
 
-  const uploadImageToMoment = async (momentId: string, imageUri: string) => {
-    try {
       const formData = new FormData();
-      formData.append('image', {
-        uri: imageUri,
-        type: 'image/jpeg',
-        name: 'upload.jpg',
+
+      selectedImages.forEach((image, index) => {
+        if (image) {
+          formData.append('images', {
+            uri: image.uri,
+            type: image.type,
+            name: image.fileName,
+          });
+        }
       });
-      const response = await fetch(
-        `YOUR_SERVER_URL/moments/${momentId}/upload`,
-        {
-          method: 'POST',
+
+      console.log(formData);
+
+      if (isGroup) {
+        await api.post(`/group/${id}/upload`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-          body: formData,
-        },
-      );
-      if (response.ok) {
-        Alert.alert('사진 공유 완료', '');
+        });
+
+        navigation.navigate('GroupDetail');
       } else {
-        Alert.alert('사진 공유 실패', '');
+        await api.post(`/moment/${id}/upload`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          transformRequest: (data) => {
+            return data;
+          },
+        });
+
+        navigation.navigate('MomentDetail', {momentId: id});
       }
+
+      Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
     } catch (error) {
-      console.error('Moment Upload Error:', error);
-      Alert.alert('사진 공유 실패', '');
+      Alert.alert('사진 공유 실패', '사진 공유 도중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Container>
-      <ShareButton onPress={handleUploadPress}>
-        <FeatherIcon name={'upload'} size={30} color={theme.colors.white} />
-      </ShareButton>
-      <StyledShadow>
-        <BoxContainer>
-          {state.routes.map((route, index) => {
-            const isFocused = state.index === index;
+    <>
+      {loading && <LoadingSpinner />}
+      <Container>
+        <ShareButton onPress={handleUploadPress}>
+          <FeatherIcon name={'upload'} size={30} color={theme.colors.white} />
+        </ShareButton>
+        <StyledShadow>
+          <BoxContainer>
+            {state.routes.map((route, index) => {
+              const isFocused = state.index === index;
 
-            const onPress = () => {
-              const event = navigation.emit({
-                type: 'tabPress',
-                target: route.key,
-                canPreventDefault: true,
-              });
+              const onPress = () => {
+                const event = navigation.emit({
+                  type: 'tabPress',
+                  target: route.key,
+                  canPreventDefault: true,
+                });
 
-              if (!isFocused && !event.defaultPrevented) {
-                navigation.navigate(route.name);
-              }
-            };
+                if (!isFocused && !event.defaultPrevented) {
+                  navigation.navigate(route.name);
+                }
+              };
 
-            return (
-              <NavButtonContainer
-                key={route.key}
-                onPress={onPress}
-                isActive={isFocused}
-              >
-                <EntypoIcon
-                  name={
-                    route.name === 'HomeStack' ? 'folder-images' : 'emoji-happy'
-                  }
-                  size={30}
-                  color={
-                    isFocused
-                      ? theme.colors.maindarkorange
-                      : theme.colors.deepgray
-                  }
-                />
-                <NavButtonText isActive={isFocused}>
-                  {route.name === 'HomeStack' ? '모아' : '마이'}
-                </NavButtonText>
-              </NavButtonContainer>
-            );
-          })}
-        </BoxContainer>
-      </StyledShadow>
-    </Container>
+              return (
+                <NavButtonContainer
+                  key={route.key}
+                  onPress={onPress}
+                  isActive={isFocused}
+                >
+                  <EntypoIcon
+                    name={
+                      route.name === 'HomeStack'
+                        ? 'folder-images'
+                        : 'emoji-happy'
+                    }
+                    size={30}
+                    color={
+                      isFocused
+                        ? theme.colors.maindarkorange
+                        : theme.colors.deepgray
+                    }
+                  />
+                  <NavButtonText isActive={isFocused}>
+                    {route.name === 'HomeStack' ? '모아' : '마이'}
+                  </NavButtonText>
+                </NavButtonContainer>
+              );
+            })}
+          </BoxContainer>
+        </StyledShadow>
+      </Container>
+    </>
   );
 };
 

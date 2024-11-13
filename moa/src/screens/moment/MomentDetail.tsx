@@ -10,7 +10,12 @@ import {
   HomeStackParamList,
   StackHeaderNavigationProp,
 } from '../../types/screen';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import StackHeader from '../../components/common/header/StackHeader';
 import AlbumContainer from '../../components/album/AlbumContainer';
 import api from '../../utils/api';
@@ -85,9 +90,14 @@ const MomentDetail: React.FC = () => {
     const unsubscribe = navigation.addListener('focus', () => {
       getMomentDetail();
     });
-
     return unsubscribe;
   }, [navigation, getMomentDetail]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getMomentDetail();
+    }, [momentId]),
+  );
 
   useEffect(() => {
     if (momentInfoDetail) {
@@ -97,9 +107,10 @@ const MomentDetail: React.FC = () => {
     }
   }, [momentInfoDetail, momentInfoDetail.momentName, navigation]);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
+    await getMomentDetail(); // 새로고침 시 데이터를 다시 불러옴
+    setRefreshing(false); // 새로고침 완료 후 false로 설정
   }, []);
 
   useEffect(() => {
