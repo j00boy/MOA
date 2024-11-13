@@ -94,7 +94,7 @@ const TabNavigator: React.FC = () => (
 
 // 딥링크 설정
 const linking: LinkingOptions<AppParamList> = {
-  prefixes: ['moa://'],
+  prefixes: ['moa://', 'https://k11a602.p.ssafy.io'],
   config: {
     screens: {
       Bottom: {
@@ -121,11 +121,35 @@ const App = () => {
   const {isAuthenticated, checkAuthStatus} = useAuthStore();
   const [loading, setLoading] = useState(true);
 
+  const navigationRef = useRef<NavigationContainerRef<AppParamList>>(null);
+
   // 링크 열기 시 실행할 메소드 정의
   const handleOpenURL = (event: {url: string}) => {
     const {url} = event;
     console.log('Opened from link:', url);
+
+    if (url.includes('moment')) {
+      const momentId = url.split('/').pop();
+      if (momentId) {
+        navigationRef.current?.navigate('HomeStack', {
+          screen: 'MomentDetail',
+          params: {momentId},
+        });
+      }
+    }
   };
+
+  useEffect(() => {
+    Linking.getInitialURL().then((url) => {
+      if (url) handleOpenURL({url});
+    });
+
+    const urlListener = Linking.addListener('url', handleOpenURL);
+
+    return () => {
+      urlListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const initAuthStatus = async () => {
@@ -133,12 +157,6 @@ const App = () => {
       setLoading(false); // 로딩 완료
     };
     initAuthStatus();
-
-    const urlListener = Linking.addListener('url', handleOpenURL);
-
-    return () => {
-      urlListener.remove();
-    };
   }, [checkAuthStatus]);
 
   if (loading) {
@@ -149,7 +167,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <StyledSafeAreaView>
-        <NavigationContainer linking={linking}>
+        <NavigationContainer linking={linking} ref={navigationRef}>
           <RootStack.Navigator>
             {isAuthenticated ? (
               <>
