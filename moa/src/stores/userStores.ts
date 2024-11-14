@@ -42,6 +42,7 @@ interface UserStore {
   //   updatedData: Partial<User> & {nickname: string; image?: File},
   // ) => Promise<void>;
   updateUser: (urlWithNickname: string, formData: FormData) => Promise<void>;
+  uploadFace: (formData: FormData) => Promise<void>;
   updateDeviceToken: (deviceToken: string) => Promise<void>;
   fetchUserGroups: () => Promise<void>;
   clearUser: () => void;
@@ -77,6 +78,7 @@ export const useUserStore = create<UserStore>((set) => ({
     }
   },
 
+  // 유저 정보 (닉네임, 프로필사진) 수정
   updateUser: async (urlWithNickname: string, formData: FormData) => {
     try {
       const response = await api.put(urlWithNickname, formData, {
@@ -120,6 +122,25 @@ export const useUserStore = create<UserStore>((set) => ({
     } catch (error) {
       console.error('디바이스 토큰 업데이트 실패:', error);
     }
+  },
+
+  // 얼굴 등록
+  uploadFace: async (formData: FormData) => {
+    try {
+      const response = await api.post('/user/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('사용자 얼굴 등록: ', response.data);
+      // set({user: response.data})
+      set((state) => ({
+        user: {
+          ...state.user!, //state.user!로 user가 null이 아님을 보장하여 타입 오류를 방지
+          faceEmbedding: response.data.url, // 또는 userImage에 설정
+        },
+      }));
+    } catch (error) {}
   },
 
   // 사용자 그룹 조회
