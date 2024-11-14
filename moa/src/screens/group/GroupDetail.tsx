@@ -26,10 +26,7 @@ const GroupDetail: React.FC = () => {
   const navigation = useNavigation<StackHeaderNavigationProp>();
   const route = useRoute<GroupDetailRouteProp>();
 
-  const {groupId, groupName} = route.params.groupInfo || {
-    groupId: '',
-    groupName: '',
-  };
+  const groupId = route.params.groupId || '';
 
   const [lightColor, setLightColor] = useState('');
   const [darkColor, setDarkColor] = useState('');
@@ -42,16 +39,16 @@ const GroupDetail: React.FC = () => {
     groupIcon: 'heart',
   };
 
-  useEffect(() => {
-    if (groupName) {
-      navigation.setOptions({
-        header: () => <StackHeader title={groupName} />,
-      });
-    }
+  // useEffect(() => {
+  //   if (groupName) {
+  //     navigation.setOptions({
+  //       header: () => <StackHeader title={groupName} />,
+  //     });
+  //   }
 
-    setLightColor(lightColorMap[groupInfoDetail.groupColor]);
-    setDarkColor(darkColorMap[groupInfoDetail.groupColor]);
-  }, [groupInfoDetail.groupColor, groupName, navigation]);
+  //   setLightColor(lightColorMap[groupInfoDetail.groupColor]);
+  //   setDarkColor(darkColorMap[groupInfoDetail.groupColor]);
+  // }, [groupInfoDetail.groupColor, groupName, navigation]);
 
   return (
     <ScreenContainer>

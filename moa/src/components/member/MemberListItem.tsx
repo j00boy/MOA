@@ -61,7 +61,7 @@ const MemberListItem = ({
     <Container itemSize={itemSize}>
       <StyledImage
         source={{uri: userImage}}
-        resizeMode="contain"
+        resizeMode="cover"
         itemSize={itemSize}
       />
       <NameLine>

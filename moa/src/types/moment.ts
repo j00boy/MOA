@@ -13,7 +13,6 @@ export type Member = {
 
 export type Images = {
   thumbImgs: string[];
-  orgImgs: string[];
 };
 
 export type MomentInfoDetail = {

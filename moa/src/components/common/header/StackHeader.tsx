@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import {AppNavigationProp} from '../../../types/screen';
 
 const Container = styled.View`
-  height: 70px;
+  height: 50px;
   background-color: ${({theme}) => theme.colors.white};
   flex-direction: row;
   align-items: center;

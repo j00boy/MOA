@@ -1,10 +1,17 @@
-import React, {useState} from 'react';
+/* eslint-disable react/no-unstable-nested-components */
+import React, {useEffect, useState} from 'react';
 import ScreenContainer from '../../components/common/ScreenContainer';
 import AddInputBox from '../../components/common/input/AddInputBox';
 import styled from 'styled-components/native';
 import GroupIconButton from '../../components/common/button/GroupIconButton';
 import {lightColorMap, darkColorMap} from '../../utils/groupColor';
 import {TextButton} from '../../components/common/button/TextButton';
+import {AppHeaderParamList, HomeScreenNavigationProp} from '../../types/screen';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import StackHeader from '../../components/common/header/StackHeader';
+import {Alert} from 'react-native';
+import api from '../../utils/api';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const InputContent = styled.View`
   width: 100%;
@@ -50,11 +57,28 @@ const ButtonContainer = styled.View`
   align-items: center;
 `;
 
+type GroupAddRouteProp = RouteProp<AppHeaderParamList, 'GroupAdd'>;
+
 const GroupAdd = () => {
+  const [loading, setLoading] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
   const [groupColor, setGroupColor] = useState('gray');
   const [groupIcon, setGroupIcon] = useState('');
+
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+  const route = useRoute<GroupAddRouteProp>();
+
+  const {isEdit, groupAddInfo} = route.params || {
+    isEdit: false,
+    groupAddInfo: {
+      groupId: '',
+      groupName: '',
+      groupDescription: '',
+      groupColor: '',
+      groupIcon: '',
+    },
+  };
 
   const iconNameList = [
     'heart',
@@ -65,6 +89,21 @@ const GroupAdd = () => {
     'graduation-cap',
   ];
 
+  useEffect(() => {
+    if (isEdit && groupAddInfo) {
+      navigation.setOptions({
+        header: () => <StackHeader title="그룹 수정" />,
+      });
+      setGroupName(groupAddInfo.groupName);
+      setGroupDescription(groupAddInfo.groupDescription);
+      setGroupColor(groupAddInfo.groupColor);
+    } else {
+      navigation.setOptions({
+        header: () => <StackHeader title="그룹 생성" />,
+      });
+    }
+  }, [isEdit, groupAddInfo, navigation]);
+
   const handleGroupPost = async () => {
     if (
       groupName === '' ||
@@ -72,7 +111,41 @@ const GroupAdd = () => {
       groupColor === 'gray' ||
       groupIcon === ''
     ) {
+      Alert.alert('정보 입력', '모든 정보를 정확히 입력해주세요.');
       return;
+    }
+
+    setLoading(true);
+
+    try {
+      const newGroup = {
+        groupName: groupName,
+        groupDescription: groupDescription,
+        color: groupColor,
+        icon: groupIcon,
+      };
+
+      if (isEdit) {
+        const response = await api.put(
+          `/group/${groupAddInfo.groupId}`,
+          newGroup,
+        );
+        Alert.alert('그룹 수정', `${groupName} 그룹 수정이 완료되었습니다.`);
+        navigation.navigate('GroupDetail', {
+          groupId: response.data?.groupId,
+        });
+      } else {
+        const response = await api.post(`/group`, newGroup);
+        Alert.alert('그룹 생성', `${groupName} 그룹 생성이 완료되었습니다.`);
+        navigation.navigate('GroupDetail', {
+          groupId: response.data?.groupId,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('그룹 생성 오류', '그룹 생성 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -127,6 +200,7 @@ const GroupAdd = () => {
           onPress={handleGroupPost}
         />
       </ButtonContainer>
+      {loading && <LoadingSpinner />}
     </ScreenContainer>
   );
 };
