@@ -135,12 +135,11 @@ const GroupAdd = () => {
           groupId: response.data?.groupId,
         });
       } else {
-        console.log(newGroup);
         const response = await api.post(`/group`, newGroup);
         Alert.alert('그룹 생성', `${groupName} 그룹 생성이 완료되었습니다.`);
-        // navigation.navigate('GroupDetail', {
-        //   groupId: response.data?.groupId,
-        // });
+        navigation.navigate('GroupDetail', {
+          groupId: response.data?.groupId,
+        });
       }
     } catch (error) {
       console.log(error);
