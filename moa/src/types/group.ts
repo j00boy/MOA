@@ -9,18 +9,24 @@ export type GroupInfo = {
   memberCount: number;
 };
 
+export type Group = {
+  groupId: string;
+  groupPin: string;
+  groupName: string;
+  groupDescription: string;
+  groupIcon: string;
+  groupColor: string;
+  groupTotalImages: string;
+  createdAt: string;
+};
+
 export type GroupImages = {
   thumbImgs: Record<string, string[]>;
 };
 
 export type GroupInfoDetail = {
-  groupId: string;
-  groupName: string;
-  groupDescription: string;
-  groupColor: string;
-  groupIcon: string;
-  groupPin: string;
-  members: Member[];
+  group: Group;
+  users: Member[];
   groupOwner: Member;
   createdAt: string;
   images: GroupImages;
