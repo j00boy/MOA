@@ -146,7 +146,10 @@ const Home = () => {
       >
         <ContentContainer>
           {isGroup ? (
-            <MyGroupList />
+            <MyGroupList
+              refreshing={refreshing}
+              onRefresh={() => setRefreshing(false)}
+            />
           ) : (
             <MyMomentList
               refreshing={refreshing}
