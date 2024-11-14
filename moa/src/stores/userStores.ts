@@ -37,7 +37,11 @@ interface UserStore {
   user: User | null;
   userGroups: UserGroup[] | null;
   fetchUser: () => Promise<void>;
-  updateUser: (updatedData: Partial<User>) => Promise<void>;
+  // updateUser: (updatedData: Partial<User>) => Promise<void>;
+  // updateUser: (
+  //   updatedData: Partial<User> & {nickname: string; image?: File},
+  // ) => Promise<void>;
+  updateUser: (urlWithNickname: string, formData: FormData) => Promise<void>;
   updateDeviceToken: (deviceToken: string) => Promise<void>;
   fetchUserGroups: () => Promise<void>;
   clearUser: () => void;
@@ -51,7 +55,21 @@ export const useUserStore = create<UserStore>((set) => ({
   fetchUser: async () => {
     try {
       const response = await api.get('/user');
-      set({user: response.data});
+
+      const userData = response.data;
+
+      // 클라이언트 측 userImage에만 timestamp 추가
+      const updatedUserImageUrl = userData.userImage
+        ? `${userData.userImage}?timestamp=${new Date().getTime()}`
+        : '';
+
+      set({
+        user: {
+          ...userData,
+          userImage: updatedUserImageUrl, // 클라이언트 측 캐시 무효화용 URL
+        },
+      });
+      // set({user: response.data});
       console.log('받은 유저 정보: ', response.data);
     } catch (error) {
       console.error('사용자 정보 불러오기 실패:', error);
@@ -59,44 +77,30 @@ export const useUserStore = create<UserStore>((set) => ({
     }
   },
 
-  // 사용자 정보 수정
-  updateUser: async (updatedData) => {
+  updateUser: async (urlWithNickname: string, formData: FormData) => {
     try {
-      const response = await api.put('/user', updatedData);
+      const response = await api.put(urlWithNickname, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('사용자 정보 수정 성공', response.data);
       set({user: response.data});
-      console.log('사용자 정보 수정 성공');
     } catch (error) {
       console.error('사용자 정보 수정 실패:', error);
     }
   },
 
   // 디바이스 토큰 업데이트
-  // updateDeviceToken: async (deviceToken) => {
-  //   try {
-  //     await api.put('/user/device-token', {deviceToken});
-  //     set((state) => ({
-  //       user: state.user ? {...state.user, deviceToken} : null,
-  //     }));
-  //     console.log('디바이스 토큰 업데이트 성공');
-  //     console.log('넘어가는 정보?:', user);
-  //   } catch (error) {
-  //     console.error('디바이스 토큰 업데이트 실패:', error);
-  //   }
-  // },
   updateDeviceToken: async (deviceToken) => {
     try {
-      // 현재 상태에서 user 가져오기
       set((state) => {
         const user = state.user;
-        if (user && user.userId) {
-          const payload = {
-            userId: user.userId, // userId 포함
-            deviceToken, // deviceToken 포함
-          };
-
+        if (user) {
           // 서버로 API 요청 전송
           api
-            .put('/user/device-token', payload)
+            .put('/user/device-token', {deviceToken})
             .then(() => {
               console.log('디바이스 토큰 업데이트 성공');
             })
@@ -109,7 +113,7 @@ export const useUserStore = create<UserStore>((set) => ({
             user: {...user, deviceToken},
           };
         } else {
-          console.warn('userId를 찾을 수 없습니다.');
+          console.warn('user 정보를 찾을 수 없습니다.');
           return state;
         }
       });

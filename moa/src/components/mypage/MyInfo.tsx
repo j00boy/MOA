@@ -86,25 +86,31 @@ const MyInfo = () => {
     useUserStore();
   const [isEditing, setIsEditing] = useState(false);
   const [userName, setUserName] = useState(user?.userName || '');
-  const [userImage, setUserImage] = useState(user?.userImage || '');
+  // const [userImage, setUserImage] = useState(user?.userImage || '');
+  const [userImage, setUserImage] = useState('');
+  const [imageFile, setImageFile] = useState<{
+    uri: string;
+    type: string;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchUser();
     fetchUserGroups();
-  }, [fetchUser, fetchUserGroups]);
+  }, []);
 
   useEffect(() => {
-    if (user) {
-      setUserName(user?.userName || '');
-      setUserImage(user?.userImage || '');
+    if (user?.userImage) {
+      setUserImage(user.userImage);
     }
   }, [user]);
 
-  const handleSave = async () => {
-    await updateUser({userName, userImage}); // 업데이트된 정보 전송
-    setIsEditing(false);
-    fetchUser(); // 업데이트 후 사용자 정보 다시 불러오기
-  };
+  // useEffect(() => {
+  //   if (user) {
+  //     setUserName(user?.userName || '');
+  //     setUserImage(user?.userImage || '');
+  //   }
+  // }, []);
 
   const pickImage = async () => {
     const result = await launchImageLibrary({
@@ -115,8 +121,59 @@ const MyInfo = () => {
     });
 
     if (result.assets && result.assets[0].uri) {
-      setUserImage(result.assets[0].uri);
+      const selectedImage = result.assets[0];
+      console.log('선택한 이미지부터 확인해보장', selectedImage.uri);
+
+      setUserImage(selectedImage.uri ? selectedImage.uri : ''); // uri가 undefined일 경우 빈 문자열로 설정
+      // console.log('유저이미지: ', userImage);
+
+      setImageFile({
+        uri: selectedImage.uri ? selectedImage.uri : '', // uri가 undefined일 경우 빈 문자열로 설정
+        type: selectedImage.type || 'image/jpeg', // 기본 MIME 타입 설정
+        name: selectedImage.fileName || 'profile.jpg', // 기본 파일 이름 설정
+      });
+      // console.log('이미지파일: ', imageFile);
     }
+  };
+
+  // imageFile 상태가 업데이트될 때마다 콘솔에 로그 출력
+  useEffect(() => {
+    if (imageFile && userImage) {
+      console.log('이미지파일이 설정됨: ', imageFile.uri);
+      console.log('유저이미지 설정됨: ', userImage);
+    }
+  }, [imageFile, userImage]);
+
+  const handleSave = async () => {
+    const formData = new FormData();
+
+    if (imageFile) {
+      const image = {
+        uri: imageFile.uri,
+        type: imageFile.type,
+        name: imageFile.name,
+      };
+      formData.append('image', image as any);
+
+      // 개별 속성 확인
+      console.log('폼데이타 이미지 URI:', image.uri);
+      console.log('폼데이타 이미지 타입:', image.type);
+    }
+
+    // nickname을 URL 파라미터로 전달, image를 FormData로 전달
+    await updateUser(
+      `/user?nickname=${encodeURIComponent(userName)}`,
+      formData,
+    );
+
+    if (imageFile) {
+      // setUserImage(imageFile.uri);
+      const updatedUserImageUrl = `${imageFile.uri}?timestamp=${new Date().getTime()}`;
+      setUserImage(updatedUserImageUrl);
+    }
+
+    setIsEditing(false);
+    // await fetchUser(); // 업데이트 후 사용자 정보 다시 불러오기
   };
 
   return (
