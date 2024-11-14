@@ -67,6 +67,7 @@ const GroupDetail: React.FC = () => {
           lightColor={lightColor}
           darkColor={darkColor}
           groupId={groupId}
+          images={}
         />
       </Container>
     </ScreenContainer>
