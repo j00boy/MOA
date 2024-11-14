@@ -88,7 +88,7 @@ const MomentAdd = () => {
           `/moment/${momentAddInfo.momentId}`,
           newMoment,
         );
-        Alert.alert('순간 생성', `${momentName} 순간 수정이 완료되었습니다.`);
+        Alert.alert('순간 수정', `${momentName} 순간 수정이 완료되었습니다.`);
         navigation.navigate('MomentDetail', {
           momentId: response.data?.momentId,
         });
@@ -105,7 +105,10 @@ const MomentAdd = () => {
         });
       }
     } catch (error) {
-      Alert.alert('순간 생성 오류', '순간 생성 중 오류가 발생했습니다.');
+      Alert.alert(
+        `순간 ${isEdit ? '수정' : '생성'} 오류`,
+        `순간 ${isEdit ? '수정' : '생성'} 도중 오류가 발생했습니다.`,
+      );
     } finally {
       setLoading(false);
     }

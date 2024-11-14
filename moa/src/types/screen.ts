@@ -34,7 +34,7 @@ export type AppNavigationProp = StackNavigationProp<AppParamList>;
 // HomeStack의 ParamList 타입 정의
 export type HomeStackParamList = {
   Home: undefined;
-  GroupDetail: {groupInfo: {groupId: string; groupName: string}};
+  GroupDetail: {groupId: string};
   MomentDetail: {momentId: string};
 };
 

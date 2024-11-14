@@ -113,8 +113,8 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
           currentRoute.state?.routes[currentRoute.state.index];
         if (nestedRoute?.name === 'GroupDetail') {
           const params = nestedRoute.params as GroupDetailRouteProp['params'];
-          if (params?.groupInfo?.groupId) {
-            uploadImage(true, params.groupInfo.groupId, selectedImages);
+          if (params?.groupId) {
+            uploadImage(true, params.groupId, selectedImages);
           }
         } else if (nestedRoute?.name === 'MomentDetail') {
           const params = nestedRoute.params as MomentDetailRouteProp['params'];
@@ -142,7 +142,7 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
 
       const formData = new FormData();
 
-      selectedImages.forEach((image, index) => {
+      selectedImages.forEach((image) => {
         if (image) {
           formData.append('images', {
             uri: image.uri,
@@ -152,12 +152,13 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
         }
       });
 
-      console.log(formData);
-
       if (isGroup) {
         await api.post(`/group/${id}/upload`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
+          },
+          transformRequest: (data) => {
+            return data;
           },
         });
 
