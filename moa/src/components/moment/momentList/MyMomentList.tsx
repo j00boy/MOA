@@ -40,7 +40,7 @@ const MyMomentList = ({refreshing, onRefresh}: MyMomentListProps) => {
       setMomentList(response?.data);
     } catch {
       Alert.alert(
-        '나의 순간 오류',
+        '순간 조회 오류',
         '나의 순간 목록을 불러오는 중 오류가 발생했습니다.',
       );
     } finally {
@@ -63,7 +63,7 @@ const MyMomentList = ({refreshing, onRefresh}: MyMomentListProps) => {
   useEffect(() => {
     if (refreshing) {
       handleGetMomentList();
-      onRefresh(); // 새로고침 종료
+      onRefresh();
     }
   }, [refreshing, onRefresh]);
 
