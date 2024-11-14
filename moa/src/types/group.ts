@@ -5,6 +5,8 @@ export type GroupInfo = {
   groupName: string;
   groupColor: string;
   groupIcon: string;
+  groupTotalImages: number;
+  memberCount: number;
 };
 
 export type GroupImages = {

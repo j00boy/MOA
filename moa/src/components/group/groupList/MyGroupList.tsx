@@ -15,6 +15,7 @@ const Container = styled.View`
   flex-wrap: wrap;
   gap: 16px;
   justify-content: space-between;
+  padding: 0 2%;
 `;
 
 const NullText = styled.Text`

@@ -42,7 +42,6 @@ import {
 } from './src/utils/FirebaseSettings';
 import PhotoDetail from './src/screens/PhotoDetail';
 
-
 const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
 
