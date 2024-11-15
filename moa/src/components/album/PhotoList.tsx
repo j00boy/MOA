@@ -41,19 +41,19 @@ const PhotoList = ({
   const itemSize = (containerWidth - 3 * 5) / 4;
   const numColumns = 4;
 
-  console.log(images);
-
-  const imageArray: string[] = [];
+  let imageArray: string[] = [];
 
   if (isGroup) {
-    Object.values(images.thumbImgs).forEach((array) => {
-      if (Array.isArray(array)) {
-        imageArray.push(...array);
-      }
-    });
+    Object.values(images.thumbImgs as Record<string, string[]>).forEach(
+      (array) => {
+        if (Array.isArray(array)) {
+          imageArray.push(...array);
+        }
+      },
+    );
+  } else {
+    imageArray = images.thumbImgs as string[];
   }
-
-  console.log(imageArray);
 
   const toggleSelect = (uri: string) => {
     setSelectedPhotos((prev) =>

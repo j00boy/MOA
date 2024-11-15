@@ -304,7 +304,7 @@ const AlbumContainer = ({
       </StyledModal>
       <PhotoList
         images={images}
-        isGroup={true}
+        isGroup={isGroup}
         expiredAt={expiredAt}
         isSelectMode={selectMode}
         onSelectionChange={setSelectedPhotos}
