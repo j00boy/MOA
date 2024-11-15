@@ -99,7 +99,7 @@ const GroupDetailHeader = ({
   darkColor,
 }: GroupDetailHeaderProps) => {
   const route = useRoute<GroupDetailRouteProp>();
-  const {groupId} = route.params.groupInfo;
+  const groupId = route.params.groupId;
 
   const [isOptionModalVisible, setOptionModalVisible] = useState(false);
   const [isPinModalVisible, setPinModalVisible] = useState(false);
