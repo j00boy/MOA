@@ -37,14 +37,18 @@ const LoginButton = () => {
       const token = await login();
       const kakaoToken = token.accessToken;
       setResult(`Kakao Login Success: ${JSON.stringify(token)}`);
+      console.log('카카오 로그인 성공. 액세스 토큰:', kakaoToken);
 
       if (kakaoToken) {
         console.log('토큰: ', result);
         console.log('access토큰: ', token.accessToken);
         console.log('refresh토큰: ', token.refreshToken);
         // onLoginSuccess(kakaoToken);
+
+        // 1. 백엔드로 카카오 엑세스 토큰 전달
         await sendTokenToBackend(kakaoToken);
 
+        // 2. 백엔드로 FCM 토큰 전달
         const fcmToken = await getFcmToken();
         if (fcmToken) {
           await updateDeviceToken(fcmToken); // FCM 토큰을 백엔드로 업데이트
@@ -59,7 +63,7 @@ const LoginButton = () => {
     }
   };
 
-  // 백엔드로 액세스 토큰 전송하고 JWT 받기
+  // 백엔드로 액세스 토큰 전송하고 JWT 엑세스 토큰 및 리프레시 토큰 받기
   const sendTokenToBackend = async (accessToken: string) => {
     try {
       // 토큰 헤더에 담아서 백엔드로 보내기
@@ -78,11 +82,21 @@ const LoginButton = () => {
       }
 
       // const jwtToken = response.data.token;
-      const jwtToken = response.data.accessToken;
-      console.log('jwtToken 받음: ', jwtToken);
+      const jwtAccessToken = response.data.accessToken;
+      const jwtRefreshToken = response.data.refreshToken;
+
+      console.log(
+        'jwtToken 받음: ',
+        jwtAccessToken,
+        'refreshToken받음: ',
+        jwtRefreshToken,
+      );
       // console.log('jwt????? ', response);
-      if (jwtToken) {
-        await setAuthenticated(true, jwtToken); // JWT 토큰 저장 및 전역 상태 업데이트
+      if (jwtAccessToken && jwtRefreshToken) {
+        await setAuthenticated(true, {
+          accessToken: jwtAccessToken,
+          refreshToken: jwtRefreshToken,
+        }); // JWT 토큰 저장 및 전역 상태 업데이트
       }
     } catch (error) {
       console.error('에러났다~~Error sending token to backend:', error);
