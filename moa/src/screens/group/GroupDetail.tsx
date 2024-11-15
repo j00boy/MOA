@@ -73,13 +73,12 @@ const GroupDetail: React.FC = () => {
   const getGroupDetail = useCallback(async () => {
     setLoading(true);
     setEnterLoading(true);
+
     try {
       const response = await api.get(`/group/${groupId}`);
       setGroupInfoDetail(response?.data);
       setEnterLoading(false);
-      console.log(enterLoading);
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof AxiosError && error.response?.data.status === 403) {
         toggleModal();
       } else {
