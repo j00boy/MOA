@@ -95,7 +95,17 @@ export const useUserStore = create<UserStore>((set) => ({
       });
 
       console.log('사용자 정보 수정 성공', response.data);
-      set({user: response.data});
+      // set({user: response.data});
+      // 상태 업데이트: 캐시 무효화된 URL 적용
+      set((state) => ({
+        user: {
+          ...state.user!,
+          ...response.data,
+          userImage: response.data.userImage
+            ? `${response.data.userImage}?timestamp=${new Date().getTime()}`
+            : '', // 캐시 무효화된 userImage
+        },
+      }));
     } catch (error) {
       console.error('사용자 정보 수정 실패:', error);
     }
