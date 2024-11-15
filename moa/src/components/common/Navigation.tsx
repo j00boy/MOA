@@ -178,6 +178,7 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
 
       Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
     } catch (error) {
+      console.log(error);
       Alert.alert('사진 공유 실패', '사진 공유 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);

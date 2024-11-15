@@ -50,6 +50,7 @@ const MomentDetail: React.FC = () => {
     uploadOption: '',
   });
   const [loading, setLoading] = useState(false);
+  const [enterLoading, setEnterLoading] = useState(false);
   const [isPinModalVisible, setIsPinModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -65,10 +66,12 @@ const MomentDetail: React.FC = () => {
 
   const getMomentDetail = useCallback(async () => {
     setLoading(true);
+    setEnterLoading(true);
 
     try {
       const response = await api.get(`/moment/${momentId}`);
       setMomentInfoDetail(response?.data);
+      setEnterLoading(false);
       console.log(response?.data);
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.data.status === 403) {
@@ -147,7 +150,7 @@ const MomentDetail: React.FC = () => {
         </Container>
       )}
       <PinPostModal
-        momentId={momentId}
+        id={momentId}
         isModalVisible={isPinModalVisible}
         toggleModal={toggleModal}
         onSuccess={getMomentDetail}
