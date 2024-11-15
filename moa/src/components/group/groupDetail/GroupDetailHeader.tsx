@@ -11,6 +11,7 @@ import {HomeStackParamList} from '../../../types/screen';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {sendFeedMessage} from '../../../utils/kakaoshare';
 import {useAuthStore} from '../../../stores/authStores';
+import {Member} from '../../../types/moment';
 
 const Container = styled.View`
   width: 100%;
@@ -90,6 +91,7 @@ type GroupDetailRouteProp = RouteProp<HomeStackParamList, 'GroupDetail'>;
 
 interface GroupDetailHeaderProps {
   group: Group;
+  owner: Member;
   lightColor: string;
   darkColor: string;
   onLoadingChange: (loading: boolean) => void;
@@ -97,6 +99,7 @@ interface GroupDetailHeaderProps {
 
 const GroupDetailHeader = ({
   group,
+  owner,
   lightColor,
   darkColor,
   onLoadingChange,
@@ -119,11 +122,17 @@ const GroupDetailHeader = ({
     onLoadingChange(loading);
   }, [loading, onLoadingChange]);
 
-  const options = [
-    {id: 'pin', label: 'PIN번호 보기'},
-    {id: 'put', label: '그룹 수정'},
-    {id: 'delete', label: '그룹 삭제'},
-  ];
+  const options =
+    owner.userId === userId
+      ? [
+          {id: 'pin', label: 'PIN번호 보기'},
+          {id: 'put', label: '그룹 수정'},
+          {id: 'delete', label: '그룹 삭제'},
+        ]
+      : [
+          {id: 'pin', label: 'PIN번호 보기'},
+          {id: 'put', label: '그룹 나가기'},
+        ];
 
   const handleSelectOption = (optionId: string) => {
     toggleOptionModal();

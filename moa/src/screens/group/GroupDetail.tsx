@@ -145,6 +145,7 @@ const GroupDetail: React.FC = () => {
         >
           <GroupDetailHeader
             group={groupInfoDetail.group}
+            owner={groupInfoDetail.groupOwner}
             lightColor={lightColor}
             darkColor={darkColor}
             onLoadingChange={handleLoadingChange}
@@ -156,14 +157,14 @@ const GroupDetail: React.FC = () => {
             darkColor={darkColor}
           />
           <Partition />
-          {/* <AlbumContainer
-          title="다운 가능한 사진"
-          isGroup={true}
-          lightColor={lightColor}
-          darkColor={darkColor}
-          groupId={groupId}
-          // images={groupInfoDetail.}
-        /> */}
+          <AlbumContainer
+            title="다운 가능한 사진"
+            isGroup={true}
+            lightColor={lightColor}
+            darkColor={darkColor}
+            groupId={groupId}
+            images={groupInfoDetail.images}
+          />
         </Container>
       )}
       <PinPostModal

@@ -23,7 +23,8 @@ const NullText = styled.Text`
   font-family: 'SCDream4';
   font-size: 15px;
   color: ${({theme}) => theme.colors.deepgray};
-  margin-top: 50px;
+  padding-top: 50px;
+  margin: auto;
 `;
 
 interface MyGroupListProps {
