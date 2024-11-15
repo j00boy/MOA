@@ -16,6 +16,7 @@ const Container = styled.View`
   gap: 16px;
   justify-content: space-between;
   padding: 0 2%;
+  min-height: 200px;
 `;
 
 const NullText = styled.Text`

@@ -45,7 +45,7 @@ const MomentDetail: React.FC = () => {
     momentName: '',
     momentDescription: '',
     momentOwner: {userId: '', nickname: '', imageSrc: ''},
-    images: {thumbImgs: [], orgImgs: []},
+    images: {thumbImgs: []},
     createdAt: '',
     uploadOption: '',
   });
@@ -71,8 +71,6 @@ const MomentDetail: React.FC = () => {
       setMomentInfoDetail(response?.data);
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.data.status === 403) {
-        console.log(error.response.data.status);
-        console.log(momentId);
         toggleModal();
       } else {
         Alert.alert('순간 조회 오류', '나의 순간 조회 중 오류가 발생했습니다.');

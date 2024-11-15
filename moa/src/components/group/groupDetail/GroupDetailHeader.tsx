@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
-import {GroupInfoDetail} from '../../../types/group';
+import {Group} from '../../../types/group';
 import GroupIconButton from '../../common/button/GroupIconButton';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {TouchableOpacity} from 'react-native';
@@ -10,6 +10,7 @@ import PinModal from '../../common/modal/PinModal';
 import {HomeStackParamList} from '../../../types/screen';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {sendFeedMessage} from '../../../utils/kakaoshare';
+import {useAuthStore} from '../../../stores/authStores';
 
 const Container = styled.View`
   width: 100%;
@@ -88,21 +89,23 @@ const PhotoNumText = styled(DateText)<{color: string}>`
 type GroupDetailRouteProp = RouteProp<HomeStackParamList, 'GroupDetail'>;
 
 interface GroupDetailHeaderProps {
-  groupInfoDetail: GroupInfoDetail;
+  group: Group;
   lightColor: string;
   darkColor: string;
+  onLoadingChange: (loading: boolean) => void;
 }
 
 const GroupDetailHeader = ({
-  groupInfoDetail,
+  group,
   lightColor,
   darkColor,
+  onLoadingChange,
 }: GroupDetailHeaderProps) => {
-  const route = useRoute<GroupDetailRouteProp>();
-  const groupId = route.params.groupId;
+  const userId = useAuthStore((state: {userId: unknown}) => state.userId);
 
   const [isOptionModalVisible, setOptionModalVisible] = useState(false);
   const [isPinModalVisible, setPinModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const toggleOptionModal = () => {
     setOptionModalVisible(!isOptionModalVisible);
@@ -111,6 +114,10 @@ const GroupDetailHeader = ({
   const togglePinModal = () => {
     setPinModalVisible(!isPinModalVisible);
   };
+
+  useEffect(() => {
+    onLoadingChange(loading);
+  }, [loading, onLoadingChange]);
 
   const options = [
     {id: 'pin', label: 'PIN번호 보기'},
@@ -131,19 +138,23 @@ const GroupDetailHeader = ({
     }
   };
 
-  // 임시 핀번호 -> 나중에 변경 예정
-  const pinNum = '123456';
+  const handleShare = () => {
+    // onShare(
+    //   `${momentInfoDetail.momentName} 순간`,
+    //   `https://k11a602.p.ssafy.io/moment/${momentInfoDetail.id}`,
+    // );
+
+    sendFeedMessage(`${group.groupName} 그룹`, `group/${group.groupId}`);
+  };
 
   return (
     <Container>
       <ContentBox backcolor={lightColor}>
-        <Description color={darkColor}>
-          {groupInfoDetail.groupDescription}
-        </Description>
+        <Description color={darkColor}>{group.groupDescription}</Description>
         <IconContainer>
           <GroupIconButton
-            color={groupInfoDetail.groupColor}
-            iconName={groupInfoDetail.groupIcon}
+            color={group.groupColor}
+            iconName={group.groupIcon}
           />
           <TouchableOpacity onPress={toggleOptionModal}>
             <Icon name="ellipsis-vertical" size={22} color={darkColor} />
@@ -164,32 +175,21 @@ const GroupDetailHeader = ({
         ))}
       </StyledModal>
       <PinModal
-        pinNum={pinNum}
+        pinNum={group.groupPin}
         isModalVisible={isPinModalVisible}
         toggleModal={togglePinModal}
       />
       <AlbumInfo>
         <LineContainer>
-          <DateText color={darkColor}>2024-06-20</DateText>
+          <DateText color={darkColor}>
+            {group.createdAt.substring(0, 10)}
+          </DateText>
           <NormalText>부터 모인 사진 총</NormalText>
-          <PhotoNumText color={darkColor}>777장</PhotoNumText>
+          <PhotoNumText color={darkColor}>
+            {group.groupTotalImages}장
+          </PhotoNumText>
         </LineContainer>
-        {/* <TouchableOpacity
-          onPress={() =>
-            onShare(
-              `${groupInfoDetail.groupName} 그룹`,
-              `moa://group/${groupId}`,
-            )
-          }
-        > */}
-        <TouchableOpacity
-          onPress={() =>
-            sendFeedMessage(
-              `${groupInfoDetail.groupName} 그룹`,
-              `group/${groupId}`,
-            )
-          }
-        >
+        <TouchableOpacity onPress={handleShare}>
           <Icon name="share-social-sharp" size={25} color={darkColor} />
         </TouchableOpacity>
       </AlbumInfo>
