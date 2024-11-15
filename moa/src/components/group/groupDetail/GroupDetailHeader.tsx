@@ -3,15 +3,16 @@ import styled from 'styled-components/native';
 import {Group} from '../../../types/group';
 import GroupIconButton from '../../common/button/GroupIconButton';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {TouchableOpacity} from 'react-native';
+import {Alert, TouchableOpacity} from 'react-native';
 import {onShare} from '../../../utils/share';
 import StyledModal from '../../common/modal/StyledModal';
 import PinModal from '../../common/modal/PinModal';
-import {HomeStackParamList} from '../../../types/screen';
-import {RouteProp, useRoute} from '@react-navigation/native';
+import {AppHeaderNavigationProp} from '../../../types/screen';
+import {useNavigation} from '@react-navigation/native';
 import {sendFeedMessage} from '../../../utils/kakaoshare';
 import {useAuthStore} from '../../../stores/authStores';
 import {Member} from '../../../types/moment';
+import api from '../../../utils/api';
 
 const Container = styled.View`
   width: 100%;
@@ -87,8 +88,6 @@ const PhotoNumText = styled(DateText)<{color: string}>`
   color: ${({color}) => color};
 `;
 
-type GroupDetailRouteProp = RouteProp<HomeStackParamList, 'GroupDetail'>;
-
 interface GroupDetailHeaderProps {
   group: Group;
   owner: Member;
@@ -109,6 +108,8 @@ const GroupDetailHeader = ({
   const [isOptionModalVisible, setOptionModalVisible] = useState(false);
   const [isPinModalVisible, setPinModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const navigation = useNavigation<AppHeaderNavigationProp>();
 
   const toggleOptionModal = () => {
     setOptionModalVisible(!isOptionModalVisible);
@@ -131,8 +132,37 @@ const GroupDetailHeader = ({
         ]
       : [
           {id: 'pin', label: 'PIN번호 보기'},
-          {id: 'put', label: '그룹 나가기'},
+          {id: 'exit', label: '그룹 나가기'},
         ];
+
+  const handleDeleteGroup = async () => {
+    setLoading(true);
+    try {
+      await api.delete(`/group/${group.groupId}`);
+      Alert.alert(
+        '그룹 삭제 완료',
+        `${group.groupName} 그룹의 삭제가 완료되었습니다.`,
+      );
+      navigation.navigate('Home');
+    } catch {
+      Alert.alert('그룹 삭제 실패', '그룹 삭제 도중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExitGroup = async () => {
+    setLoading(true);
+    try {
+      await api.put(`/group/${group.groupId}/leave`);
+      Alert.alert('그룹 나가기 완료', `${group.groupName} 그룹을 나갔습니다.`);
+      navigation.navigate('Home');
+    } catch {
+      Alert.alert('그룹 나가기 실패', '그룹 탈퇴 도중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSelectOption = (optionId: string) => {
     toggleOptionModal();
@@ -142,8 +172,22 @@ const GroupDetailHeader = ({
       togglePinModal();
     } else if (optionId === 'put') {
       toggleOptionModal();
+      navigation.navigate('GroupAdd', {
+        groupAddInfo: {
+          groupId: group.groupId,
+          groupName: group.groupName,
+          groupDescription: group.groupDescription,
+          groupColor: group.groupColor,
+          groupIcon: group.groupIcon,
+        },
+        isEdit: true,
+      });
     } else if (optionId === 'delete') {
       toggleOptionModal();
+      handleDeleteGroup();
+    } else if (optionId === 'exit') {
+      toggleOptionModal();
+      handleExitGroup();
     }
   };
 
