@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import styled, {useTheme} from 'styled-components/native';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
@@ -52,7 +53,14 @@ const GroupIconButton = ({
     ) {
       return <EntypoIcon name={iconName} size={17} color={iconColor} />;
     } else if (iconName === 'heart') {
-      return <EntypoIcon name={iconName} size={19} color={iconColor} />;
+      return (
+        <EntypoIcon
+          name={iconName}
+          size={19}
+          color={iconColor}
+          style={{marginTop: 1}}
+        />
+      );
     } else if (iconName === 'book-open' || iconName === 'graduation-cap') {
       return <FAIcon name={iconName} size={15} color={iconColor} />;
     }

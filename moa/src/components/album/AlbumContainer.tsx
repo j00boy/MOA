@@ -123,6 +123,7 @@ interface AlbumContainerProps {
   groupId?: string;
   momentId?: string;
   images: Images | GroupImages;
+  expiredAt?: Record<string, string>;
 }
 
 const AlbumContainer = ({
@@ -133,6 +134,7 @@ const AlbumContainer = ({
   groupId,
   momentId,
   images,
+  expiredAt,
 }: AlbumContainerProps) => {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
@@ -173,9 +175,6 @@ const AlbumContainer = ({
         0,
       )
     : images.thumbImgs.length;
-
-  console.log(Object.values(images.thumbImgs));
-  console.log(images.thumbImgs['6736e3a3a7f3a85fba768706']?.length);
 
   // 접근 권한 요청
   const requestStoragePermission = async () => {
@@ -303,11 +302,13 @@ const AlbumContainer = ({
           </ModalItemContainer>
         ))}
       </StyledModal>
-      {/* <PhotoList
-        images={isGrop? images.thumbImgs : images}
+      <PhotoList
+        images={images}
+        isGroup={isGroup}
+        expiredAt={expiredAt}
         isSelectMode={selectMode}
         onSelectionChange={setSelectedPhotos}
-      /> */}
+      />
       {loading && <LoadingSpinner />}
     </Container>
   );

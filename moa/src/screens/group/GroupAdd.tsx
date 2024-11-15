@@ -97,6 +97,7 @@ const GroupAdd = () => {
       setGroupName(groupAddInfo.groupName);
       setGroupDescription(groupAddInfo.groupDescription);
       setGroupColor(groupAddInfo.groupColor);
+      setGroupIcon(groupAddInfo.groupIcon);
     } else {
       navigation.setOptions({
         header: () => <StackHeader title="그룹 생성" />,
@@ -194,7 +195,7 @@ const GroupAdd = () => {
       </AddInputBox>
       <ButtonContainer>
         <TextButton
-          text="그룹 만들기"
+          text={isEdit ? '그룹 수정하기' : '그룹 만들기'}
           size="large"
           backcolor="maindarkorange"
           onPress={handleGroupPost}

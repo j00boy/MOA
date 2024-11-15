@@ -59,15 +59,16 @@ const ButtonContainer = styled.View`
 `;
 
 interface PinModalProps {
-  momentId?: string;
-  groupId?: string;
+  isGroup?: boolean;
+  id: string;
   isModalVisible: boolean;
   toggleModal: () => void;
   onSuccess: () => void;
 }
 
 const PinPostModal = ({
-  momentId,
+  isGroup = false,
+  id,
   isModalVisible,
   toggleModal,
   onSuccess,
@@ -112,10 +113,14 @@ const PinPostModal = ({
 
   const handleSubmitPin = async () => {
     try {
-      await api.post(`/moment/${momentId}?PIN=${pinNum}`);
+      if (isGroup) {
+        await api.post(`/group/${id}/join?PIN=${pinNum}`);
+      } else {
+        await api.post(`/moment/${id}?PIN=${pinNum}`);
+      }
       toggleModal();
       onSuccess();
-    } catch {
+    } catch (error) {
       Alert.alert('PIN번호 오류', 'PIN번호가 일치하지 않습니다.');
     }
   };

@@ -113,7 +113,7 @@ const MomentDetailHeader = ({
         ]
       : [
           {id: 'pin', label: 'PIN번호 보기'},
-          {id: 'put', label: '순간 나가기'},
+          {id: 'exit', label: '순간 나가기'},
         ];
 
   const handleShare = () => {
@@ -180,7 +180,7 @@ const MomentDetailHeader = ({
     } else if (optionId === 'delete') {
       toggleOptionModal();
       handleDeleteMoment();
-    } else if (optionId === 'put') {
+    } else if (optionId === 'exit') {
       toggleOptionModal();
       handleExitMoment();
     }
