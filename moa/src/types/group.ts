@@ -21,7 +21,6 @@ export type Group = {
 };
 
 export type GroupImages = {
-  // expiredAt: [];
   thumbImgs: Record<string, string[]>;
 };
 
@@ -30,6 +29,7 @@ export type GroupInfoDetail = {
   users: Member[];
   groupOwner: Member;
   images: GroupImages;
+  expiredAt: Record<string, string>;
 };
 
 export type GroupAddInfo = {

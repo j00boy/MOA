@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/native';
+import FastImage from 'react-native-fast-image';
 
 const Container = styled.View<{itemSize: number}>`
   width: ${({itemSize}) => itemSize}px;
@@ -9,7 +10,7 @@ const Container = styled.View<{itemSize: number}>`
   margin-right: 15px;
 `;
 
-const StyledImage = styled.Image<{itemSize: number}>`
+const StyledImage = styled(FastImage)<{itemSize: number}>`
   width: ${({itemSize}) => itemSize}px;
   height: ${({itemSize}) => itemSize}px;
   border: 2px solid ${({theme}) => theme.colors.mediumgray};

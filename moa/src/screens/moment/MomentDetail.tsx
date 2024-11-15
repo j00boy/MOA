@@ -124,7 +124,7 @@ const MomentDetail: React.FC = () => {
 
   return (
     <ScreenContainer>
-      {loading ? (
+      {loading || enterLoading ? (
         <LoadingSpinner isDark={false} />
       ) : (
         <Container
