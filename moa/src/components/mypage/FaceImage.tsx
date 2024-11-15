@@ -89,7 +89,7 @@ const MyComponent = () => {
   const {user, fetchUser, uploadFace} = useUserStore();
   // 모달 상태
   const [modalVisible, setModalVisible] = useState(false);
-  const [faceEmbedding, setfaceEmbedding] = useState('');
+  const [registerImage, setregisterImage] = useState('');
   const [imageFileUrl, setImageFileUrl] = useState<{
     uri: string;
     type: string;
@@ -107,8 +107,8 @@ const MyComponent = () => {
 
   useEffect(() => {
     if (user) {
-      setfaceEmbedding(user?.faceEmbedding || '');
-      console.log('처음에는', faceEmbedding);
+      setregisterImage(user?.registerImage || '');
+      console.log('처음에는', registerImage);
     }
   }, [user]);
 
@@ -147,7 +147,7 @@ const MyComponent = () => {
       });
 
       const uuploadFaceImage = `${selectedUri}?timestamp=${new Date().getTime()}`;
-      setfaceEmbedding(uuploadFaceImage); // 로컬 상태 업데이트 (미리보기용)
+      setregisterImage(uuploadFaceImage); // 로컬 상태 업데이트 (미리보기용)
       // setfaceEmbedding(selectedUri || '');
       console.log('선택된 이미지 URI:', selectedUri);
 
@@ -197,8 +197,8 @@ const MyComponent = () => {
       </Modal>
 
       <PreviewContainer>
-        {faceEmbedding ? (
-          <PreviewImage source={{uri: faceEmbedding}} />
+        {registerImage ? (
+          <PreviewImage source={{uri: registerImage}} />
         ) : (
           <PlaceholderPreview>
             <PlaceholderText>미리보기가 여기에 표시됩니다</PlaceholderText>

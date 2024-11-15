@@ -12,7 +12,8 @@ interface User {
   userImage: string;
   role: string;
   deviceToken: string;
-  faceEmbedding: string | null;
+  // faceEmbedding: string | null;
+  registerImage: string | null;
 }
 
 interface GroupMember {
@@ -64,10 +65,16 @@ export const useUserStore = create<UserStore>((set) => ({
         ? `${userData.userImage}?timestamp=${new Date().getTime()}`
         : '';
 
+      // 클라이언트 측 registerImage에만 timestamp 추가
+      const updatedRegisterImage = userData.registerImage
+        ? `${userData.registerImage}?timestamp=${new Date().getTime()}`
+        : '';
+
       set({
         user: {
           ...userData,
           userImage: updatedUserImageUrl, // 클라이언트 측 캐시 무효화용 URL
+          registerImage: updatedRegisterImage, //클라이언트 측 캐시 무효화용 registerImage
         },
       });
       // set({user: response.data});
@@ -137,7 +144,8 @@ export const useUserStore = create<UserStore>((set) => ({
       set((state) => ({
         user: {
           ...state.user!, //state.user!로 user가 null이 아님을 보장하여 타입 오류를 방지
-          faceEmbedding: response.data.url, // 또는 userImage에 설정
+          // registerImage: response.data.url,
+          registerImage: `${response.data.url}?timestamp=${new Date().getTime()}`, // 캐시 무효화된 URL
         },
       }));
     } catch (error) {}
