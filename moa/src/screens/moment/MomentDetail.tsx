@@ -147,7 +147,7 @@ const MomentDetail: React.FC = () => {
         </Container>
       )}
       <PinPostModal
-        momentId={momentId}
+        id={momentId}
         isModalVisible={isPinModalVisible}
         toggleModal={toggleModal}
         onSuccess={getMomentDetail}

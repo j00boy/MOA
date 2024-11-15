@@ -73,10 +73,8 @@ const GroupDetail: React.FC = () => {
     setLoading(true);
 
     try {
-      console.log(groupId);
       const response = await api.get(`/group/${groupId}`);
       setGroupInfoDetail(response?.data);
-      console.log(response?.data);
     } catch (error: unknown) {
       console.log(error);
       if (error instanceof AxiosError && error.response?.data.status === 403) {
@@ -168,7 +166,8 @@ const GroupDetail: React.FC = () => {
         </Container>
       )}
       <PinPostModal
-        groupId={groupId}
+        isGroup={true}
+        id={groupId}
         isModalVisible={isPinModalVisible}
         toggleModal={toggleModal}
         onSuccess={getGroupDetail}
