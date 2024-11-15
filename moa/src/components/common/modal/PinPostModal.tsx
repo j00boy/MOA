@@ -59,7 +59,8 @@ const ButtonContainer = styled.View`
 `;
 
 interface PinModalProps {
-  momentId: string;
+  momentId?: string;
+  groupId?: string;
   isModalVisible: boolean;
   toggleModal: () => void;
   onSuccess: () => void;

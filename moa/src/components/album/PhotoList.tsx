@@ -36,6 +36,8 @@ const PhotoList = ({
   const itemSize = (containerWidth - 3 * 5) / 4;
   const numColumns = 4;
 
+  console.log(images);
+
   const toggleSelect = (uri: string) => {
     setSelectedPhotos((prev) =>
       prev.includes(uri)

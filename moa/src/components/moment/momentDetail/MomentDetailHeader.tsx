@@ -117,15 +117,15 @@ const MomentDetailHeader = ({
         ];
 
   const handleShare = () => {
-    onShare(
-      `${momentInfoDetail.momentName} 순간`,
-      `https://k11a602.p.ssafy.io/moment/${momentInfoDetail.id}`,
-    );
-
-    // sendFeedMessage(
+    // onShare(
     //   `${momentInfoDetail.momentName} 순간`,
-    //   `moment/${momentInfoDetail.id}`,
-    // )
+    //   `https://k11a602.p.ssafy.io/moment/${momentInfoDetail.id}`,
+    // );
+
+    sendFeedMessage(
+      `${momentInfoDetail.momentName} 순간`,
+      `moment/${momentInfoDetail.id}`,
+    );
   };
 
   const handleDeleteMoment = async () => {

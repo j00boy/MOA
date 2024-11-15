@@ -8,6 +8,7 @@ import {Alert, PermissionsAndroid, Platform} from 'react-native';
 import uuid from 'react-native-uuid';
 import LoadingSpinner from '../common/LoadingSpinner';
 import {Images} from '../../types/moment';
+import {GroupImages} from '../../types/group';
 
 const Container = styled.View`
   width: 100%;
@@ -121,7 +122,7 @@ interface AlbumContainerProps {
   darkColor?: string;
   groupId?: string;
   momentId?: string;
-  images: Images;
+  images: Images | GroupImages;
 }
 
 const AlbumContainer = ({
@@ -165,6 +166,16 @@ const AlbumContainer = ({
       toggleOptionModal();
     }
   };
+
+  const imageCount = isGroup
+    ? Object.values(images.thumbImgs).reduce(
+        (total, imgArray) => total + imgArray.length,
+        0,
+      )
+    : images.thumbImgs.length;
+
+  console.log(Object.values(images.thumbImgs));
+  console.log(images.thumbImgs['6736e3a3a7f3a85fba768706']?.length);
 
   // 접근 권한 요청
   const requestStoragePermission = async () => {
@@ -250,7 +261,7 @@ const AlbumContainer = ({
       <RowLine>
         <TitleLine>
           <Title>{title}</Title>
-          <TitleNum darkColor={darkColor}>{images.thumbImgs.length}장</TitleNum>
+          <TitleNum darkColor={darkColor}>{imageCount}장</TitleNum>
         </TitleLine>
         <SelectButton onPress={toggleSelectMode}>
           <Icon
@@ -292,11 +303,11 @@ const AlbumContainer = ({
           </ModalItemContainer>
         ))}
       </StyledModal>
-      <PhotoList
-        images={images}
+      {/* <PhotoList
+        images={isGrop? images.thumbImgs : images}
         isSelectMode={selectMode}
         onSelectionChange={setSelectedPhotos}
-      />
+      /> */}
       {loading && <LoadingSpinner />}
     </Container>
   );

@@ -162,7 +162,7 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
           },
         });
 
-        navigation.navigate('GroupDetail');
+        navigation.navigate('GroupDetail', {groupId: id});
       } else {
         await api.post(`/moment/${id}/upload`, formData, {
           headers: {

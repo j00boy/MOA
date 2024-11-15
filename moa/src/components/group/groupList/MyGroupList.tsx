@@ -16,13 +16,15 @@ const Container = styled.View`
   gap: 16px;
   justify-content: space-between;
   padding: 0 2%;
+  min-height: 200px;
 `;
 
 const NullText = styled.Text`
   font-family: 'SCDream4';
   font-size: 15px;
   color: ${({theme}) => theme.colors.deepgray};
-  margin-top: 50px;
+  padding-top: 50px;
+  margin: auto;
 `;
 
 interface MyGroupListProps {

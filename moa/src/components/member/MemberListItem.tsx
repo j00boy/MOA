@@ -13,7 +13,7 @@ const StyledImage = styled.Image<{itemSize: number}>`
   width: ${({itemSize}) => itemSize}px;
   height: ${({itemSize}) => itemSize}px;
   border: 2px solid ${({theme}) => theme.colors.mediumgray};
-  border-radius: 100px;
+  border-radius: 50px;
 `;
 
 const NameLine = styled.View`
@@ -59,11 +59,7 @@ const MemberListItem = ({
 }: MemberListItemProps) => {
   return (
     <Container itemSize={itemSize}>
-      <StyledImage
-        source={{uri: userImage}}
-        resizeMode="cover"
-        itemSize={itemSize}
-      />
+      <StyledImage source={{uri: userImage}} itemSize={itemSize} />
       <NameLine>
         {isMe ? (
           <>
