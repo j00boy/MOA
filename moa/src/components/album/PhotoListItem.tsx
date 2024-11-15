@@ -3,6 +3,7 @@ import styled, {useTheme} from 'styled-components/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useNavigation} from '@react-navigation/native';
 import {AppNavigationProp} from '../../types/screen';
+import FastImage from 'react-native-fast-image';
 
 const Container = styled.TouchableOpacity<{
   itemSize: number;
@@ -14,7 +15,7 @@ const Container = styled.TouchableOpacity<{
   margin-right: ${({isLastInRow}) => (isLastInRow ? '0px' : '5px')};
 `;
 
-const StyledImage = styled.Image<{itemSize: number}>`
+const StyledImage = styled(FastImage)<{itemSize: number}>`
   width: ${({itemSize}) => itemSize}px;
   height: ${({itemSize}) => itemSize}px;
 `;
@@ -56,7 +57,9 @@ const PhotoListItem = ({
     if (isSelectMode) {
       onToggleSelect();
     } else {
-      navigation.navigate('PhotoDetail', {uri: uri});
+      navigation.navigate('PhotoDetail', {
+        uri: uri.replace('/thumbnail/', '/original/'),
+      });
     }
   };
 
@@ -72,6 +75,9 @@ const PhotoListItem = ({
           uri,
         }}
         resizeMode="cover"
+        onError={() => {
+          console.error(`Failed to load image: ${uri}`);
+        }}
       />
       {isSelectMode && (
         <CheckButton>

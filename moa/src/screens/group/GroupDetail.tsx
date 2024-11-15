@@ -52,6 +52,7 @@ const GroupDetail: React.FC = () => {
     users: [],
     groupOwner: {userId: '', nickname: '', imageSrc: ''},
     images: {thumbImgs: {}},
+    expiredAt: {},
   });
   const [loading, setLoading] = useState(false);
   const [enterLoading, setEnterLoading] = useState(false);
@@ -164,6 +165,7 @@ const GroupDetail: React.FC = () => {
             darkColor={darkColor}
             groupId={groupId}
             images={groupInfoDetail.images}
+            expiredAt={groupInfoDetail.expiredAt}
           />
         </Container>
       )}

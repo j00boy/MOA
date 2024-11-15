@@ -14,11 +14,14 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
+import FastImage from 'react-native-fast-image';
 
 const windowWidth = Dimensions.get('window').width * 0.88;
 const windowHeight = Dimensions.get('window').height - 80;
 
-const StyledImage = styled(Animated.Image)<{aspectRatio: number}>`
+const StyledImage = styled(Animated.createAnimatedComponent(FastImage))<{
+  aspectRatio: number;
+}>`
   width: ${windowWidth}px;
   height: ${({aspectRatio}) => windowWidth / aspectRatio}px;
   max-height: ${windowHeight}px;
