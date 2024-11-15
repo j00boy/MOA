@@ -154,7 +154,7 @@ const GroupDetailHeader = ({
   const handleExitGroup = async () => {
     setLoading(true);
     try {
-      await api.put(`/group/${group.groupId}/leave`);
+      await api.delete(`/group/${group.groupId}/leave`);
       Alert.alert('그룹 나가기 완료', `${group.groupName} 그룹을 나갔습니다.`);
       navigation.navigate('Home');
     } catch {
