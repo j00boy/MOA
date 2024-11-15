@@ -54,6 +54,7 @@ const GroupDetail: React.FC = () => {
     images: {thumbImgs: {}},
   });
   const [loading, setLoading] = useState(false);
+  const [enterLoading, setEnterLoading] = useState(false);
   const [lightColor, setLightColor] = useState('');
   const [darkColor, setDarkColor] = useState('');
   const [isPinModalVisible, setIsPinModalVisible] = useState(false);
@@ -71,14 +72,13 @@ const GroupDetail: React.FC = () => {
 
   const getGroupDetail = useCallback(async () => {
     setLoading(true);
+    setEnterLoading(true);
 
     try {
-      console.log(groupId);
       const response = await api.get(`/group/${groupId}`);
       setGroupInfoDetail(response?.data);
-      console.log(response?.data);
+      setEnterLoading(false);
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof AxiosError && error.response?.data.status === 403) {
         toggleModal();
       } else {
@@ -135,7 +135,7 @@ const GroupDetail: React.FC = () => {
 
   return (
     <ScreenContainer>
-      {loading ? (
+      {enterLoading || loading ? (
         <LoadingSpinner isDark={false} />
       ) : (
         <Container
@@ -168,7 +168,8 @@ const GroupDetail: React.FC = () => {
         </Container>
       )}
       <PinPostModal
-        groupId={groupId}
+        isGroup={true}
+        id={groupId}
         isModalVisible={isPinModalVisible}
         toggleModal={toggleModal}
         onSuccess={getGroupDetail}

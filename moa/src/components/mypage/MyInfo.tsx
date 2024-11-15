@@ -104,7 +104,7 @@ const MyInfo = () => {
     if (user?.userImage) {
       setUserImage(user.userImage);
     }
-  }, [user]);
+  }, [user?.userImage]);
 
   // useEffect(() => {
   //   if (user) {
