@@ -1,8 +1,9 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import styled, {css, useTheme} from 'styled-components/native';
 import {IconButton} from '../common/button/IconButton';
 import {useUserStore} from '../../stores/userStores';
-import {TextInput, View, TouchableOpacity, Button} from 'react-native';
+import {TextInput, TouchableOpacity} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 interface TextProps {
@@ -97,13 +98,13 @@ const MyInfo = () => {
   useEffect(() => {
     fetchUser();
     fetchUserGroups();
-  }, []);
+  }, [fetchUser, fetchUserGroups]);
 
   useEffect(() => {
     if (user?.userImage) {
       setUserImage(user.userImage);
     }
-  }, [user]);
+  }, [user?.userImage]);
 
   // useEffect(() => {
   //   if (user) {
@@ -115,9 +116,6 @@ const MyInfo = () => {
   const pickImage = async () => {
     const result = await launchImageLibrary({
       mediaType: 'photo',
-      maxWidth: 200,
-      maxHeight: 200,
-      quality: 1,
     });
 
     if (result.assets && result.assets[0].uri) {
@@ -153,7 +151,7 @@ const MyInfo = () => {
         type: imageFile.type,
         name: imageFile.name,
       };
-      formData.append('image', image as any);
+      formData.append('image', image as unknown);
 
       // 개별 속성 확인
       console.log('폼데이타 이미지 URI:', image.uri);

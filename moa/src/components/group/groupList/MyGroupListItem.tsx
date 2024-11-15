@@ -70,10 +70,7 @@ const MyGroupListItem = ({groupInfo}: MyGroupListItemProps) => {
       bgColor={lightColorMap[groupInfo.groupColor]}
       onPress={() =>
         navigation.navigate('GroupDetail', {
-          groupInfo: {
-            groupId: groupInfo.groupId,
-            groupName: groupInfo.groupName,
-          },
+          groupId: groupInfo.groupId,
         })
       }
     >
@@ -82,7 +79,7 @@ const MyGroupListItem = ({groupInfo}: MyGroupListItemProps) => {
           {groupInfo.groupName}
         </TitleText>
         <ContentColor txtColor={darkColorMap[groupInfo.groupColor]}>
-          사진 527장
+          사진 {groupInfo.groupTotalImages}장
         </ContentColor>
       </TopLine>
       <BottomLine>
@@ -92,7 +89,7 @@ const MyGroupListItem = ({groupInfo}: MyGroupListItemProps) => {
             size={20}
             color={theme.colors.deepgray}
           />
-          <MemberText>25명</MemberText>
+          <MemberText>{groupInfo.memberCount}명</MemberText>
         </MemberLine>
         <GroupIconButton
           color={groupInfo.groupColor}

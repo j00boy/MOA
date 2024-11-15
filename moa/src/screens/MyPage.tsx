@@ -96,7 +96,7 @@ const MyPage = () => {
             size="small"
             // onPress={() => getUserData()}
             onPress={() => signOutWithKakao()}
-          ></TextButton>
+          />
         </Logout>
         <MyInfo />
       </View>

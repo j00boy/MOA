@@ -61,7 +61,6 @@ const Add = () => {
             }
           />
         </ButtonContainer>
-        s
       </ContentContainer>
     </ScreenContainer>
   );

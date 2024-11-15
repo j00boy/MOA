@@ -12,7 +12,8 @@ interface User {
   userImage: string;
   role: string;
   deviceToken: string;
-  faceEmbedding: string | null;
+  // faceEmbedding: string | null;
+  registerImage: string | null;
 }
 
 interface GroupMember {
@@ -42,6 +43,7 @@ interface UserStore {
   //   updatedData: Partial<User> & {nickname: string; image?: File},
   // ) => Promise<void>;
   updateUser: (urlWithNickname: string, formData: FormData) => Promise<void>;
+  uploadFace: (formData: FormData) => Promise<void>;
   updateDeviceToken: (deviceToken: string) => Promise<void>;
   fetchUserGroups: () => Promise<void>;
   clearUser: () => void;
@@ -63,10 +65,16 @@ export const useUserStore = create<UserStore>((set) => ({
         ? `${userData.userImage}?timestamp=${new Date().getTime()}`
         : '';
 
+      // 클라이언트 측 registerImage에만 timestamp 추가
+      const updatedRegisterImage = userData.registerImage
+        ? `${userData.registerImage}?timestamp=${new Date().getTime()}`
+        : '';
+
       set({
         user: {
           ...userData,
           userImage: updatedUserImageUrl, // 클라이언트 측 캐시 무효화용 URL
+          registerImage: updatedRegisterImage, //클라이언트 측 캐시 무효화용 registerImage
         },
       });
       // set({user: response.data});
@@ -77,6 +85,7 @@ export const useUserStore = create<UserStore>((set) => ({
     }
   },
 
+  // 유저 정보 (닉네임, 프로필사진) 수정
   updateUser: async (urlWithNickname: string, formData: FormData) => {
     try {
       const response = await api.put(urlWithNickname, formData, {
@@ -86,7 +95,17 @@ export const useUserStore = create<UserStore>((set) => ({
       });
 
       console.log('사용자 정보 수정 성공', response.data);
-      set({user: response.data});
+      // set({user: response.data});
+      // 상태 업데이트: 캐시 무효화된 URL 적용
+      set((state) => ({
+        user: {
+          ...state.user!,
+          ...response.data,
+          userImage: response.data.userImage
+            ? `${response.data.userImage}?timestamp=${new Date().getTime()}`
+            : '', // 캐시 무효화된 userImage
+        },
+      }));
     } catch (error) {
       console.error('사용자 정보 수정 실패:', error);
     }
@@ -120,6 +139,26 @@ export const useUserStore = create<UserStore>((set) => ({
     } catch (error) {
       console.error('디바이스 토큰 업데이트 실패:', error);
     }
+  },
+
+  // 얼굴 등록
+  uploadFace: async (formData: FormData) => {
+    try {
+      const response = await api.post('/user/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('사용자 얼굴 등록: ', response.data);
+      // set({user: response.data})
+      set((state) => ({
+        user: {
+          ...state.user!, //state.user!로 user가 null이 아님을 보장하여 타입 오류를 방지
+          // registerImage: response.data.url,
+          registerImage: `${response.data.url}?timestamp=${new Date().getTime()}`, // 캐시 무효화된 URL
+        },
+      }));
+    } catch (error) {}
   },
 
   // 사용자 그룹 조회
