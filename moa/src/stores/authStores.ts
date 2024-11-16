@@ -84,7 +84,10 @@ export const useAuthStore = create<AuthState>()(
       refreshAccessToken: async (): Promise<string | null> => {
         try {
           // const { refreshToken } = useAuthStore.getState();
-          const {refreshToken} = get();
+          // const {refreshToken} = get();
+          const refreshToken = await AsyncStorage.getItem('refreshToken');
+          console.log('refreshToken은 있음ㅠㅜ: ', refreshToken);
+
           if (!refreshToken) {
             throw new Error('리프레시 토큰이 없습니다.');
           }
@@ -99,8 +102,8 @@ export const useAuthStore = create<AuthState>()(
             },
           );
 
-          const {accessToken} = response.data;
-
+          const accessToken = response.data.accessToken;
+          console.log('새 accessToken: ', accessToken);
           // 새 액세스 토큰 저장
           await AsyncStorage.setItem('jwtToken', accessToken);
 
