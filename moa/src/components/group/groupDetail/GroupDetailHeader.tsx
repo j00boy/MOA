@@ -4,12 +4,12 @@ import {Group} from '../../../types/group';
 import GroupIconButton from '../../common/button/GroupIconButton';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Alert, TouchableOpacity} from 'react-native';
-import {onShare} from '../../../utils/share';
+import {onShare, shareToKakaoUsingIntent} from '../../../utils/share';
 import StyledModal from '../../common/modal/StyledModal';
 import PinModal from '../../common/modal/PinModal';
 import {AppHeaderNavigationProp} from '../../../types/screen';
 import {useNavigation} from '@react-navigation/native';
-import {sendFeedMessage} from '../../../utils/kakaoshare';
+import {sendFeedMessage, kakaoShare} from '../../../utils/kakaoshare';
 import {useAuthStore} from '../../../stores/authStores';
 import {Member} from '../../../types/moment';
 import api from '../../../utils/api';
@@ -192,12 +192,11 @@ const GroupDetailHeader = ({
   };
 
   const handleShare = () => {
-    // onShare(
-    //   `${momentInfoDetail.momentName} 순간`,
-    //   `https://k11a602.p.ssafy.io/moment/${momentInfoDetail.id}`,
-    // );
+    // shareToKakaoUsingIntent(`moa://group/${group.groupId}`);
+    // onShare(`${group.groupName} 그룹`, `moa://group/${group.groupId}`);
 
-    sendFeedMessage(`${group.groupName} 그룹`, `group/${group.groupId}`);
+    // sendFeedMessage(`${group.groupName} 그룹`, `group/${group.groupId}`);
+    kakaoShare();
   };
 
   return (

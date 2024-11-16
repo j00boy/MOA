@@ -102,15 +102,24 @@ const TabNavigator: React.FC = () => (
 
 // 딥링크 설정
 const linking: LinkingOptions<AppParamList> = {
-  prefixes: ['moa://', 'https://k11a602.p.ssafy.io'],
+  prefixes: [
+    'kakao4a3fdb040f645b2e0bba4c975b6b8ba5://',
+    'moa://',
+    'https://k11a602.p.ssafy.io',
+  ],
   config: {
     screens: {
       Bottom: {
         screens: {
           HomeStack: {
             screens: {
-              Home: 'home',
-              GroupDetail: 'group/:groupId',
+              Home: '',
+              GroupDetail: {
+                path: 'kakaolink',
+                parse: {
+                  groupId: (groupId: string) => groupId,
+                },
+              },
               MomentDetail: 'moment/:momentId',
             },
           },

@@ -132,7 +132,7 @@ export const useUserStore = create<UserStore>((set) => ({
             user: {...user, deviceToken},
           };
         } else {
-          console.warn('user 정보를 찾을 수 없습니다.');
+          console.log('user 정보를 찾을 수 없습니다.');
           return state;
         }
       });
