@@ -1,45 +1,49 @@
 import Share from 'react-native-share';
-import {Text} from 'react-native';
+import KakaoShareLink from 'react-native-kakao-share-link';
 
-export const onShare = async (name: string, link: string) => {
+export const onShare = async (message: string, link: string) => {
   try {
     const shareOptions = {
-      // title: `${name} 공유하기`,
-      message: `${link}`,
+      message: `${message}\n`,
+      url: `${link}`,
     };
-
     await Share.open(shareOptions);
-
-    // // 콘솔 추후 수정 예정
-    // if (result.action === Share.sharedAction) {
-    //   if (result.activityType) {
-    //     console.log('공유 완료:', result.activityType);
-    //   } else {
-    //     console.log('공유가 완료되었습니다.');
-    //   }
-    // } else if (result.action === Share.dismissedAction) {
-    //   console.log('공유가 취소되었습니다.');
-    // }
   } catch (error) {
-    console.error('공유 오류:', error);
+    console.log('공유 오류:', error);
   }
 };
 
-import {Linking, Platform} from 'react-native';
-
-export const shareToKakaoUsingIntent = async (link: string) => {
-  if (Platform.OS === 'android') {
-    const intentUrl = `kakaolink://send?url=${encodeURIComponent(link)}`;
-
-    try {
-      const isSupported = await Linking.canOpenURL(intentUrl);
-      if (isSupported) {
-        await Linking.openURL(intentUrl);
-      } else {
-        console.error('카카오톡이 설치되지 않았습니다.');
-      }
-    } catch (error) {
-      console.error('카카오톡 공유 오류:', error);
-    }
+export const kakaoShare = async (
+  key: string,
+  id: string,
+  message: string,
+  deepLink: string,
+) => {
+  try {
+    await KakaoShareLink.sendFeed({
+      content: {
+        title: 'MOA에 초대합니다!',
+        imageUrl:
+          'https://moa-s3-bucket.s3.ap-northeast-2.amazonaws.com//logo/MOA_logo.png',
+        description: `${message}`,
+        // imageWidth?: number;
+        // imageHeight?: number;
+        link: {
+          webUrl: `${deepLink}`,
+          mobileWebUrl: `${deepLink}`,
+        },
+      },
+      buttons: [
+        {
+          title: '앱에서 보기',
+          link: {
+            androidExecutionParams: [{key: `${key}`, value: `${id}`}],
+            iosExecutionParams: [{key: `${key}`, value: `${id}`}],
+          },
+        },
+      ],
+    });
+  } catch (error) {
+    console.log(error);
   }
 };

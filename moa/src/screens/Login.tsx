@@ -1,6 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
 // src/screens/KakaoTestScreen.tsx
 import React, {useEffect, useState} from 'react';
-import {View, Button, Text, Alert} from 'react-native';
 import {
   login,
   logout,
@@ -11,10 +11,18 @@ import {
 } from '@react-native-seoul/kakao-login';
 import LoginButton from '../components/common/login/LoginButton';
 import styled from 'styled-components/native';
+import ScreenContainer from '../components/common/ScreenContainer';
 
 const Container = styled.View`
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LogoContainer = styled.View`
   flex-direction: column;
-  height: 160px;
+  height: 170px;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 120px;
@@ -26,9 +34,9 @@ const Logo = styled.Image`
 `;
 
 const Explain = styled.Text`
-  font-family: ${(props) => props.theme.fontFamily.SCDream4};
+  font-family: ${(props) => props.theme.fontFamily.SCDream5};
   color: ${(props) => props.theme.colors.darkyellow};
-  font-size: 13px;
+  font-size: 16px;
 `;
 
 const Login = () => {
@@ -95,13 +103,14 @@ const Login = () => {
   // };
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <ScreenContainer>
       <Container>
-        <Logo source={require('../assets/images/MOA_logo.png')} />
-        <Explain>소중한 순간, 쉽고 빠르게 나눠요</Explain>
-      </Container>
-      <LoginButton></LoginButton>
-      {/* <Button title="Login with Kakao" onPress={signInWithKakao} />
+        <LogoContainer>
+          <Logo source={require('../assets/images/MOA_logo.png')} />
+          <Explain>소중한 순간, 쉽고 빠르게 나눠요</Explain>
+        </LogoContainer>
+        <LoginButton />
+        {/* <Button title="Login with Kakao" onPress={signInWithKakao} />
       <Button title="Logout from Kakao" onPress={signOutWithKakao} />
       <Button title="Get Kakao Profile" onPress={getKakaoProfile} />
       <Button
@@ -111,7 +120,8 @@ const Login = () => {
       <Button title="Get Kakao Service Terms" onPress={getKakaoServiceTerms} />
       <Button title="Unlink Kakao Account" onPress={unlinkKakao} />
       <Text style={{marginTop: 20}}>{result}</Text> */}
-    </View>
+      </Container>
+    </ScreenContainer>
   );
 };
 

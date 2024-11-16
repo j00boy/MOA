@@ -58,7 +58,7 @@ const PinModal = ({pinNum, isModalVisible, toggleModal}: PinModalProps) => {
 
   const copyToClipboard = () => {
     Clipboard.setString(pinNum);
-    Alert.alert('클립보드에 복사되었습니다.');
+    Alert.alert('', '핀번호가 클립보드에 복사되었습니다.');
     toggleModal();
   };
 
