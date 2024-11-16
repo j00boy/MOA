@@ -4,9 +4,7 @@ import {MomentInfoDetail} from '../../../types/moment';
 import styled, {useTheme} from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import StyledModal from '../../common/modal/StyledModal';
-import {onShare} from '../../../utils/share';
 import PinModal from '../../common/modal/PinModal';
-import {sendFeedMessage} from '../../../utils/kakaoshare';
 import {AppHeaderNavigationProp} from '../../../types/screen';
 import {useNavigation} from '@react-navigation/native';
 import {formatDate} from '../../../utils/common';
@@ -117,18 +115,6 @@ const MomentDetailHeader = ({
           {id: 'exit', label: '순간 나가기'},
         ];
 
-  const handleShare = () => {
-    // onShare(
-    //   `${momentInfoDetail.momentName} 순간`,
-    //   `https://k11a602.p.ssafy.io/moment/${momentInfoDetail.id}`,
-    // );
-
-    sendFeedMessage(
-      `${momentInfoDetail.momentName} 순간`,
-      `moment/${momentInfoDetail.id}`,
-    );
-  };
-
   const handleDeleteMoment = async () => {
     setLoading(true);
     try {
@@ -195,7 +181,7 @@ const MomentDetailHeader = ({
         {/* <LeftTime>남은 시간 타이머</LeftTime> */}
         <Timer createdAt={momentInfoDetail.createdAt} />
         <IconContainer>
-          <TouchableOpacity onPress={handleShare}>
+          <TouchableOpacity>
             <Icon
               name="share-social-sharp"
               size={22}

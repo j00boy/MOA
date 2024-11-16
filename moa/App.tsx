@@ -112,36 +112,17 @@ const linking: LinkingOptions<AppParamList> = {
       Bottom: {
         screens: {
           HomeStack: {
+            path: 'kakaolink',
             screens: {
               Home: '',
-              GroupDetail: {
-                path: 'kakaolink',
-                parse: {
-                  groupId: (groupId: string) => groupId,
-                },
-              },
-              // MomentDetail: {
-              //   path: 'kakaolink',
-              //   parse: {
-              //     momentId: (momentId: string) => momentId,
-              //   },
-              // },
+              GroupDetail: 'group/:groupId',
+              MomentDetail: 'moment/:momentId',
             },
           },
           MyPageStack: 'mypage',
         },
       },
     },
-  },
-  getPathFromState: (state, options) => {
-    const path = state?.routes?.[0]?.state?.routes?.[0]?.name;
-    if (path === 'GroupDetail' || path === 'MomentDetail') {
-      const params = state?.routes?.[0]?.state?.routes?.[0]?.params;
-      return params
-        ? `${path}/${params.groupId || params.momentId}`
-        : `${path}`;
-    }
-    return options?.screens?.[path] || path;
   },
 };
 
@@ -152,8 +133,9 @@ const StyledSafeAreaView = styled.SafeAreaView`
 const App = () => {
   const {isAuthenticated, checkAuthStatus} = useAuthStore();
   const [loading, setLoading] = useState(true);
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
 
-  const navigationRef = useRef<NavigationContainerRef<AppParamList>>(null);
+  const navigationRef = useRef<NavigationContainerRef<AppParamList>>();
 
   // 링크 열기 시 실행할 메소드 정의
   const handleOpenURL = (event: {url: string}) => {
@@ -161,7 +143,7 @@ const App = () => {
     console.log('Opened from link:', url);
 
     if (url.includes('group')) {
-      const groupId = url.split('/').pop();
+      const groupId = url.split('=').pop();
       if (groupId) {
         navigationRef.current?.navigate('HomeStack', {
           screen: 'GroupDetail',
@@ -182,16 +164,15 @@ const App = () => {
   };
 
   useEffect(() => {
-    Linking.getInitialURL().then((url) => {
-      if (url) handleOpenURL({url});
-    });
+    if (isNavigationReady) {
+      Linking.getInitialURL().then((url) => {
+        if (url) handleOpenURL({url});
+      });
 
-    const urlListener = Linking.addListener('url', handleOpenURL);
-
-    return () => {
-      urlListener.remove();
-    };
-  }, []);
+      const urlListener = Linking.addListener('url', handleOpenURL);
+      return () => urlListener.remove();
+    }
+  }, [isNavigationReady]);
 
   useEffect(() => {
     const initAuthStatus = async () => {
@@ -232,7 +213,15 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <StyledSafeAreaView>
-        <NavigationContainer linking={linking} ref={navigationRef}>
+        <NavigationContainer
+          linking={linking}
+          ref={(ref) => {
+            if (ref) {
+              navigationRef.current = ref;
+              setIsNavigationReady(true);
+            }
+          }}
+        >
           <RootStack.Navigator>
             {isAuthenticated ? (
               <>
