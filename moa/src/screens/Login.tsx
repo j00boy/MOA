@@ -12,10 +12,23 @@ import {
 import LoginButton from '../components/common/login/LoginButton';
 import styled from 'styled-components/native';
 
+const Container = styled.View`
+  flex-direction: column;
+  height: 160px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 120px;
+`;
+
 const Logo = styled.Image`
   width: 160px;
-  height: 100px;
-  margin-bottom: 100px;
+  height: 110px;
+`;
+
+const Explain = styled.Text`
+  font-family: ${(props) => props.theme.fontFamily.SCDream4};
+  color: ${(props) => props.theme.colors.darkyellow};
+  font-size: 13px;
 `;
 
 const Login = () => {
@@ -83,7 +96,10 @@ const Login = () => {
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Logo source={require('../assets/images/logo.png')} />
+      <Container>
+        <Logo source={require('../assets/images/MOA_logo.png')} />
+        <Explain>소중한 순간, 쉽고 빠르게 나눠요</Explain>
+      </Container>
       <LoginButton></LoginButton>
       {/* <Button title="Login with Kakao" onPress={signInWithKakao} />
       <Button title="Logout from Kakao" onPress={signOutWithKakao} />
