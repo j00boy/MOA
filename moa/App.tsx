@@ -120,13 +120,28 @@ const linking: LinkingOptions<AppParamList> = {
                   groupId: (groupId: string) => groupId,
                 },
               },
-              MomentDetail: 'moment/:momentId',
+              // MomentDetail: {
+              //   path: 'kakaolink',
+              //   parse: {
+              //     momentId: (momentId: string) => momentId,
+              //   },
+              // },
             },
           },
           MyPageStack: 'mypage',
         },
       },
     },
+  },
+  getPathFromState: (state, options) => {
+    const path = state?.routes?.[0]?.state?.routes?.[0]?.name;
+    if (path === 'GroupDetail' || path === 'MomentDetail') {
+      const params = state?.routes?.[0]?.state?.routes?.[0]?.params;
+      return params
+        ? `${path}/${params.groupId || params.momentId}`
+        : `${path}`;
+    }
+    return options?.screens?.[path] || path;
   },
 };
 
@@ -144,6 +159,16 @@ const App = () => {
   const handleOpenURL = (event: {url: string}) => {
     const {url} = event;
     console.log('Opened from link:', url);
+
+    if (url.includes('group')) {
+      const groupId = url.split('/').pop();
+      if (groupId) {
+        navigationRef.current?.navigate('HomeStack', {
+          screen: 'GroupDetail',
+          params: {groupId},
+        });
+      }
+    }
 
     if (url.includes('moment')) {
       const momentId = url.split('/').pop();
