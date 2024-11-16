@@ -1,4 +1,31 @@
 import {shareFeedTemplate} from '@react-native-kakao/share';
+import KakaoShareLink from 'react-native-kakao-share-link';
+
+export const kakaoShare = async () => {
+  try {
+    const response = await KakaoShareLink.sendFeed({
+      content: {
+        title: '모아 초대',
+        imageUrl: 'src/assets/images/logo.png',
+        link: {
+          webUrl: 'moa://group/611',
+          mobileWebUrl: 'moa://group/611',
+        },
+      },
+      buttons: [
+        {
+          title: '앱에서 보기',
+          link: {
+            androidExecutionParams: [{key: 'groupId', value: '611'}],
+            iosExecutionParams: [{key: 'test', value: 'from Kakao App'}],
+          },
+        },
+      ],
+    });
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 export const sendFeedMessage = async (name: string, id: string) => {
   console.log('공유 버튼 눌렀음');
@@ -26,15 +53,6 @@ export const sendFeedMessage = async (name: string, id: string) => {
         //   sharedCount: 20, // 공유 개수
         // },
         buttons: [
-          {
-            title: '자세히 보기',
-            link: {
-              mobileWebUrl: url,
-              webUrl: url,
-              //   mobileWebUrl: 'https://your.com',
-              //   webUrl: 'https://your.com',
-            },
-          },
           {
             title: '앱에서 열기',
             link: {

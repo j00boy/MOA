@@ -183,7 +183,7 @@ const AlbumContainer = ({
         if (Platform.Version >= 30) {
           // Android 11 이상: MANAGE_EXTERNAL_STORAGE 권한 필요 -> WRITE이어도 되는데 나중에 배포 후 재테스트
           const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            PermissionsAndroid.PERMISSIONS.WRITE_MANAGE_STORAGE,
           );
           return granted === PermissionsAndroid.RESULTS.GRANTED;
         } else {

@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.moa">
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-
     <application
         android:name=".MainApplication"
         android:allowBackup="false"
@@ -16,19 +14,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".KakaoActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="kakao4a3fdb040f645b2e0bba4c975b6b8ba5" />
-                <data android:host="kakaolink" />
-            </intent-filter>
-        </activity>
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
@@ -40,14 +25,19 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="kakao4a3fdb040f645b2e0bba4c975b6b8ba5" />
+            <data android:host="kakaolink" />
+            </intent-filter>
         <intent-filter android:autoVerify="true">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" android:host="k11a602.p.ssafy.io" android:pathPrefix="/group" />
         </intent-filter>
-            
-        <!-- HTTPS for Moment -->
         <intent-filter android:autoVerify="true">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
@@ -63,10 +53,8 @@
         </intent-filter>
         <intent-filter>
             <action android:name="android.intent.action.VIEW" />
-
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-
             <data android:scheme="moa" />
             <data android:host="moment" />
         </intent-filter>
@@ -77,10 +65,8 @@
         android:exported="true">
           <intent-filter>
               <action android:name="android.intent.action.VIEW" />
-
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
-
               <data android:scheme="kakao4a3fdb040f645b2e0bba4c975b6b8ba5" />
               <data android:host="oauth" />
           </intent-filter>
