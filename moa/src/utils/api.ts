@@ -32,9 +32,10 @@ api.interceptors.response.use(
     // 401 에러 처리
     if (error.response && error.response.status === 401) {
       console.error('401 Unauthorized, 토큰 갱신 시도. 다시 로그인 해주세요');
-      // const {refreshAccessToken} = useAuthStore();
-      const {refreshAccessToken} = useAuthStore.getState();
+      const {refreshAccessToken} = useAuthStore();
+      // const {refreshAccessToken} = useAuthStore.getState();
       const newAccessToken = await refreshAccessToken();
+      console.log('401에러 시 새 accessToken 발급 완료!: ', newAccessToken);
 
       if (newAccessToken) {
         const originalRequest = error.config;
