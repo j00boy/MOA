@@ -22,8 +22,12 @@ export const kakaoShare = async (
   try {
     await KakaoShareLink.sendFeed({
       content: {
-        title: `${message}`,
-        imageUrl: 'src/assets/images/logo.png',
+        title: 'MOA에 초대합니다!',
+        imageUrl:
+          'https://moa-s3-bucket.s3.ap-northeast-2.amazonaws.com//logo/MOA_logo.png',
+        description: `${message}`,
+        // imageWidth?: number;
+        // imageHeight?: number;
         link: {
           webUrl: `${deepLink}`,
           mobileWebUrl: `${deepLink}`,

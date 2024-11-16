@@ -5,12 +5,12 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {onShare, kakaoShare} from '../../../utils/share';
 
-const Container = styled.View`
+const Container = styled.View<{isGroup: boolean}>`
   width: 170px;
   height: 50px;
   padding: 10px 15px;
   position: absolute;
-  right: 0;
+  right: ${({isGroup}) => (isGroup ? '0' : '-35px')};
   top: 27px;
   background-color: ${({theme}) => theme.colors.white};
   border: solid 1px ${({theme}) => theme.colors.mediumgray};
@@ -65,8 +65,8 @@ const ShareModal = ({
   const deepLink = isGroup ? `moa://group/${id}` : `moa://moment/${id}`;
 
   const message = isGroup
-    ? `MOA의 ${name} 그룹에서 소중한 사진을 공유해보세요!`
-    : `MOA의 ${name} 순간에서 소중한 사진을 공유해보세요!`;
+    ? `${name} 그룹에서 소중한 사진을 공유해보세요.`
+    : `${name} 순간에서 소중한 사진을 공유해보세요.`;
 
   const handleCopyLink = () => {
     Clipboard.setString(deepLink);
@@ -83,7 +83,7 @@ const ShareModal = ({
   };
 
   return (
-    <Container>
+    <Container isGroup={isGroup}>
       <LinkContainer onPress={handleCopyLink}>
         <Icon name="link" size={18} color={theme.colors.deepgray} />
       </LinkContainer>
