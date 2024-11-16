@@ -12,6 +12,7 @@ import {useNavigation} from '@react-navigation/native';
 import {formatDate} from '../../../utils/common';
 import {useAuthStore} from '../../../stores/authStores';
 import api from '../../../utils/api';
+import Timer from './Timer';
 
 const Container = styled.View`
   width: 100%;
@@ -191,7 +192,8 @@ const MomentDetailHeader = ({
   return (
     <Container>
       <TitleLine>
-        <LeftTime>남은 시간 타이머</LeftTime>
+        {/* <LeftTime>남은 시간 타이머</LeftTime> */}
+        <Timer createdAt={momentInfoDetail.createdAt} />
         <IconContainer>
           <TouchableOpacity onPress={handleShare}>
             <Icon

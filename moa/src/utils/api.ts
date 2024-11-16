@@ -1,6 +1,7 @@
 // src/utils/api.ts
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useAuthStore} from '../stores/authStores';
 
 const api = axios.create({
   baseURL: 'https://k11a602.p.ssafy.io/api',
@@ -14,10 +15,10 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     // 토큰을 로컬 저장소에서 가져와 헤더에 추가
-    const token = await AsyncStorage.getItem('jwtToken'); // 추후에 실제 토큰 값으로 변경
-    if (token) {
-      console.log('jwt토큰 확인 ', token);
-      config.headers.Authorization = `Bearer ${token}`;
+    const accessToken = await AsyncStorage.getItem('jwtToken'); // 추후에 실제 토큰 값으로 변경
+    if (accessToken) {
+      console.log('jwt토큰 확인 ', accessToken);
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -27,10 +28,22 @@ api.interceptors.request.use(
 // 응답 인터셉터
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     // 401 에러 처리
     if (error.response && error.response.status === 401) {
-      console.error('Unauthorized, 다시 로그인 해주세요');
+      console.error('401 Unauthorized, 토큰 갱신 시도. 다시 로그인 해주세요');
+      const {refreshAccessToken} = useAuthStore();
+      // const {refreshAccessToken} = useAuthStore.getState();
+      const newAccessToken = await refreshAccessToken();
+      console.log('401에러 시 새 accessToken 발급 완료!: ', newAccessToken);
+
+      if (newAccessToken) {
+        const originalRequest = error.config;
+        if (originalRequest) {
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return api.request(originalRequest);
+        }
+      }
     }
     return Promise.reject(error);
   },
