@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {Alert, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {MomentInfoDetail} from '../../../types/moment';
@@ -11,6 +12,7 @@ import {formatDate} from '../../../utils/common';
 import {useAuthStore} from '../../../stores/authStores';
 import api from '../../../utils/api';
 import Timer from './Timer';
+import ShareModal from '../../common/modal/ShareModal';
 
 const Container = styled.View`
   width: 100%;
@@ -87,6 +89,7 @@ const MomentDetailHeader = ({
   const userId = useAuthStore((state: {userId: unknown}) => state.userId);
   const [isOptionModalVisible, setOptionModalVisible] = useState(false);
   const [isPinModalVisible, setPinModalVisible] = useState(false);
+  const [isShareModalVisible, setShareModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<AppHeaderNavigationProp>();
@@ -97,6 +100,10 @@ const MomentDetailHeader = ({
 
   const togglePinModal = () => {
     setPinModalVisible(!isPinModalVisible);
+  };
+
+  const toggleShareModal = () => {
+    setShareModalVisible(!isShareModalVisible);
   };
 
   useEffect(() => {
@@ -181,11 +188,21 @@ const MomentDetailHeader = ({
         {/* <LeftTime>남은 시간 타이머</LeftTime> */}
         <Timer createdAt={momentInfoDetail.createdAt} />
         <IconContainer>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={toggleShareModal}
+            style={{position: 'relative'}}
+          >
             <Icon
               name="share-social-sharp"
               size={22}
               color={theme.colors.maindarkorange}
+            />
+            <ShareModal
+              isGroup={false}
+              id={momentInfoDetail.id}
+              name={momentInfoDetail.momentName}
+              visible={isShareModalVisible}
+              toggleModal={toggleShareModal}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={toggleOptionModal}>

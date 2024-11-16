@@ -112,7 +112,6 @@ const linking: LinkingOptions<AppParamList> = {
       Bottom: {
         screens: {
           HomeStack: {
-            path: 'kakaolink',
             screens: {
               Home: '',
               GroupDetail: 'group/:groupId',
@@ -143,7 +142,10 @@ const App = () => {
     console.log('Opened from link:', url);
 
     if (url.includes('group')) {
-      const groupId = url.split('=').pop();
+      const groupId = url.includes('kakao')
+        ? url.split('=').pop()
+        : url.split('/').pop();
+
       if (groupId) {
         navigationRef.current?.navigate('HomeStack', {
           screen: 'GroupDetail',
@@ -153,7 +155,10 @@ const App = () => {
     }
 
     if (url.includes('moment')) {
-      const momentId = url.split('/').pop();
+      const momentId = url.includes('kakao')
+        ? url.split('=').pop()
+        : url.split('/').pop();
+
       if (momentId) {
         navigationRef.current?.navigate('HomeStack', {
           screen: 'MomentDetail',
