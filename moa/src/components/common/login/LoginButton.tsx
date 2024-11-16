@@ -1,9 +1,8 @@
 // src/components/common/login/LoginButton.tsx
-import React, {useState, useEffect} from 'react';
-import {Button, Alert, View, TouchableOpacity, Text} from 'react-native';
+import React, {useState} from 'react';
+import {Alert, View, TouchableOpacity, Text} from 'react-native';
 import {login, logout} from '@react-native-seoul/kakao-login';
 import styled from 'styled-components/native';
-import {TextButton} from '../button/TextButton';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useAuthStore} from '../../../stores/authStores';
 import {useUserStore} from '../../../stores/userStores';
@@ -22,9 +21,10 @@ const ButtonContainer = styled(TouchableOpacity)`
 `;
 
 const ButtonText = styled(Text)`
+  font-family: 'SCDream5';
   color: #3c1e1e;
-  font-size: 16px;
-  margin-left: 8px;
+  font-size: 15px;
+  margin-left: 12px;
 `;
 
 const LoginButton = () => {
