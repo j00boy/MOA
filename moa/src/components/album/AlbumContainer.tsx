@@ -184,6 +184,22 @@ const AlbumContainer = ({
     }
   };
 
+  const handleClassifyFood = async () => {
+    setLoading(true);
+    try {
+      if (isGroup) {
+        console.log(groupId);
+        const response = await api.get(`/img/${groupId}/food`);
+      } else {
+        const response = await api.get(`/img/${groupId}/${momentId}/food`);
+      }
+    } catch (error: unknown) {
+      Alert.alert('사진 분류 오류', '음식 사진 분류 도중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSelectOption = async (optionId: string) => {
     toggleOptionModal();
     if (optionId === 'mine') {
@@ -191,8 +207,10 @@ const AlbumContainer = ({
       handleClassifyMine();
     } else if (optionId === 'scenary') {
       toggleOptionModal();
+      Alert.alert('', '준비중입니다.');
     } else if (optionId === 'food') {
       toggleOptionModal();
+      handleClassifyFood();
     }
   };
 
