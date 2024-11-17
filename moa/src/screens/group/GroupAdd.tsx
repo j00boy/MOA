@@ -112,7 +112,7 @@ const GroupAdd = () => {
       groupColor === 'gray' ||
       groupIcon === ''
     ) {
-      Alert.alert('정보 입력', '모든 정보를 정확히 입력해주세요.');
+      Alert.alert('', '모든 정보를 정확히 입력해주세요.');
       return;
     }
 
@@ -131,20 +131,20 @@ const GroupAdd = () => {
           `/group/${groupAddInfo.groupId}`,
           newGroup,
         );
-        Alert.alert('그룹 수정', `${groupName} 그룹 수정이 완료되었습니다.`);
+        Alert.alert('', `${groupName} 그룹 수정이 완료되었습니다.`);
         navigation.navigate('GroupDetail', {
           groupId: response.data?.groupId,
         });
       } else {
         const response = await api.post(`/group`, newGroup);
-        Alert.alert('그룹 생성', `${groupName} 그룹 생성이 완료되었습니다.`);
+        Alert.alert('', `${groupName} 그룹 생성이 완료되었습니다.`);
         navigation.navigate('GroupDetail', {
           groupId: response.data?.groupId,
         });
       }
     } catch (error) {
       console.log(error);
-      Alert.alert('그룹 생성 오류', '그룹 생성 중 오류가 발생했습니다.');
+      Alert.alert('', '그룹 생성 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }

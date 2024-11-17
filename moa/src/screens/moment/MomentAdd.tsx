@@ -72,7 +72,7 @@ const MomentAdd = () => {
 
   const handleMomentPost = async () => {
     if (momentName === '' || momentDescription === '') {
-      Alert.alert('정보 입력', '모든 정보를 정확히 입력해주세요.');
+      Alert.alert('', '모든 정보를 정확히 입력해주세요.');
       return;
     }
 
@@ -88,7 +88,7 @@ const MomentAdd = () => {
           `/moment/${momentAddInfo.momentId}`,
           newMoment,
         );
-        Alert.alert('순간 수정', `${momentName} 순간 수정이 완료되었습니다.`);
+        Alert.alert('', `${momentName} 순간 수정이 완료되었습니다.`);
         navigation.navigate('MomentDetail', {
           momentId: response.data?.momentId,
         });
@@ -99,7 +99,7 @@ const MomentAdd = () => {
           uploadOption: uploadOption,
         };
         const response = await api.post('/moment', newMoment);
-        Alert.alert('순간 생성', `${momentName} 순간이 생성되었습니다.`);
+        Alert.alert('', `${momentName} 순간이 생성되었습니다.`);
         navigation.navigate('MomentDetail', {
           momentId: response.data?.momentId,
         });

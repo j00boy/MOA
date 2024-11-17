@@ -72,8 +72,7 @@ const MyPage = () => {
     try {
       await logout();
       await storeLogout();
-      console.log('로그아웃!!!');
-      Alert.alert('로그아웃 되었습니다.', '로그인 화면으로 이동합니다.');
+      Alert.alert('로그아웃', '로그인 화면으로 이동합니다.');
     } catch (error) {
       console.error('Logout Failed', error);
     }
