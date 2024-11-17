@@ -79,29 +79,31 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
   const handleUploadPress = async () => {
     const result = await launchImageLibrary({
       mediaType: 'photo',
-      selectionLimit: MAX_IMAGES,
+      selectionLimit: 0,
     });
     if (result.didCancel || !result.assets || result.assets.length === 0) {
       return;
     }
 
-    const selectedImages = result.assets
-      .filter((image) => {
-        if (
-          !image.fileSize ||
-          image.fileSize > MAX_IMAGE_SIZE_MB * 1024 * 1024
-        ) {
-          Alert.alert(
-            '사진 용량 초과',
-            `10MB 이하의 사진만 업로드할 수 있습니다.`,
-          );
-          return false;
-        }
-        return true;
-      })
-      .slice(0, MAX_IMAGES);
+    const selectedImages = result.assets.filter((image) => {
+      if (!image.fileSize || image.fileSize > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+        Alert.alert(
+          '사진 용량 초과',
+          '10MB 이하의 사진만 업로드할 수 있습니다.',
+        );
+        return false;
+      }
+
+      return true;
+    });
 
     if (selectedImages) {
+      console.log(selectedImages.length);
+      if (selectedImages.length > MAX_IMAGES) {
+        Alert.alert('', '한 번에 30장까지만 업로드할 수 있습니다.');
+        return;
+      }
+
       const currentRoute = state.routes[state.index];
       const screenName = currentRoute.name;
 
