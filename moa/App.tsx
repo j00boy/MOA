@@ -41,6 +41,7 @@ import {
   requestNotificationPermission,
 } from './src/utils/FirebaseSettings';
 import PhotoDetail from './src/screens/PhotoDetail';
+import SplashScreen from 'react-native-splash-screen';
 
 const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
@@ -135,6 +136,10 @@ const App = () => {
   const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   const navigationRef = useRef<NavigationContainerRef<AppParamList>>();
+
+  useEffect(() => {
+    SplashScreen.hide(); // 앱 로드 후 스플래시 숨기기
+  }, []);
 
   // 링크 열기 시 실행할 메소드 정의
   const handleOpenURL = (event: {url: string}) => {
