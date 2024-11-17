@@ -25,6 +25,7 @@ interface PhotoListProps {
   isGroup?: boolean;
   expiredAt?: Record<string, string>;
   isSelectMode?: boolean;
+  selectedPhotos: string[];
   onSelectionChange: (selectedPhotos: string[]) => void;
 }
 
@@ -33,10 +34,10 @@ const PhotoList = ({
   isGroup = false,
   expiredAt,
   isSelectMode = false,
+  selectedPhotos,
   onSelectionChange,
 }: PhotoListProps) => {
   const [containerWidth, setContainerWidth] = useState(0);
-  const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
 
   const itemSize = (containerWidth - 3 * 5) / 4;
   const numColumns = 4;
@@ -56,11 +57,10 @@ const PhotoList = ({
   }
 
   const toggleSelect = (uri: string) => {
-    setSelectedPhotos((prev) =>
-      prev.includes(uri)
-        ? prev.filter((photo) => photo !== uri)
-        : [...prev, uri],
-    );
+    const updatedPhotos = selectedPhotos.includes(uri)
+      ? selectedPhotos.filter((photo) => photo !== uri)
+      : [...selectedPhotos, uri];
+    onSelectionChange(updatedPhotos);
   };
 
   useEffect(() => {
