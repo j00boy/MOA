@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import ScreenContainer from '../components/common/ScreenContainer';
 import styled from 'styled-components/native';
@@ -19,12 +20,7 @@ import FastImage from 'react-native-fast-image';
 const windowWidth = Dimensions.get('window').width * 0.88;
 const windowHeight = Dimensions.get('window').height - 80;
 
-const StyledImage = styled(Animated.createAnimatedComponent(FastImage))<{
-  aspectRatio: number;
-}>`
-  width: ${windowWidth}px;
-  height: ${({aspectRatio}) => windowWidth / aspectRatio}px;
-  max-height: ${windowHeight}px;
+const StyledImage = styled(Animated.createAnimatedComponent(FastImage))`
   margin: auto;
 `;
 
@@ -60,14 +56,39 @@ const PhotoDetail = () => {
     transform: [{scale: scale.value}],
   }));
 
+  // 동적으로 이미지 크기 계산
+  const calculateImageSize = () => {
+    if (aspectRatio > 1) {
+      // 가로가 더 긴 이미지
+      const width = Math.min(windowWidth, windowHeight * aspectRatio);
+      const height = width / aspectRatio;
+      return {width, height};
+    } else {
+      // 세로가 더 긴 이미지
+      const height = Math.min(windowHeight, windowWidth / aspectRatio);
+      const width = height * aspectRatio;
+      return {width, height};
+    }
+  };
+
+  const {width, height} = calculateImageSize();
+
   return (
     <ScreenContainer>
-      <GestureHandlerRootView>
+      <GestureHandlerRootView
+        style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+      >
         <GestureDetector gesture={pinchGesture}>
           <StyledImage
             source={{uri}}
-            aspectRatio={aspectRatio}
-            style={animatedStyle}
+            style={[
+              animatedStyle,
+              {
+                width,
+                height,
+              },
+            ]}
+            resizeMode={FastImage.resizeMode.contain}
           />
         </GestureDetector>
       </GestureHandlerRootView>
