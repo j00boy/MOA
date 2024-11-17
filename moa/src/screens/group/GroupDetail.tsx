@@ -25,7 +25,7 @@ import {AxiosError} from 'axios';
 import {Alert, RefreshControl} from 'react-native';
 import PinPostModal from '../../components/common/modal/PinPostModal';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import useNotificationStore from '../../stores/notifyStores';
+// import useNotificationStore from '../../stores/notifyStores';
 
 const Container = styled.ScrollView.attrs({
   nestedScrollEnabled: true,
@@ -62,12 +62,12 @@ const GroupDetail: React.FC = () => {
   const [isPinModalVisible, setIsPinModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   // groupId 저장 함수 호출
-  const {setGroupId} = useNotificationStore();
+  // const {setGroupId} = useNotificationStore();
   const groupId = route.params.groupId;
   // 그룹 ID 설정
-  useEffect(() => {
-    setGroupId(groupId);
-  }, [groupId]);
+  // useEffect(() => {
+  //   setGroupId(groupId);
+  // }, [groupId]);
 
   const toggleModal = () => {
     setIsPinModalVisible(!isPinModalVisible);
