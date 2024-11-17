@@ -162,21 +162,26 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
           },
         });
 
+        Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
         navigation.navigate('GroupDetail', {groupId: id});
       } else {
-        await api.post(`/moment/${id}/upload`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          transformRequest: (data) => {
-            return data;
-          },
-        });
+        const response = await api.get(`/moment/${id}/upload`);
 
-        navigation.navigate('MomentDetail', {momentId: id});
+        if (response?.data) {
+          await api.post(`/moment/${id}/upload`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+            transformRequest: (data) => {
+              return data;
+            },
+          });
+          Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
+          navigation.navigate('MomentDetail', {momentId: id});
+        } else {
+          Alert.alert('', '관리자만 사진을 업로드할 수 있습니다.');
+        }
       }
-
-      Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
     } catch (error) {
       console.log(error);
       Alert.alert('사진 공유 실패', '사진 공유 도중 오류가 발생했습니다.');
