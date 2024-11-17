@@ -78,7 +78,7 @@ const MyGroupList = ({refreshing, onRefresh}: MyGroupListProps) => {
         <MyGroupListItem key={group.groupId} groupInfo={group} />
       ))}
       {groupList?.length === 0 && <NullText>가입한 그룹이 없습니다.</NullText>}
-      {loading && <LoadingSpinner isDark={false} isScreen={false} />}
+      {loading && <LoadingSpinner isDark={false} />}
     </Container>
   );
 };

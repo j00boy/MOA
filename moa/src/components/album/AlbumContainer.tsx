@@ -150,8 +150,8 @@ const AlbumContainer = ({
 
   const options = [
     {id: 'mine', label: '내가 나온 사진'},
-    {id: 'scenary', label: '풍경'},
     {id: 'food', label: '음식'},
+    {id: 'scenary', label: '풍경'},
   ];
 
   const toggleSelectMode = () => {
@@ -167,9 +167,7 @@ const AlbumContainer = ({
     setSelectedPhotos([]);
     try {
       if (isGroup) {
-        console.log(groupId);
         const response = await api.post(`/img/${groupId}/compare`);
-        console.log(response?.data);
         setIsClassified(true);
         setClassifiedImg(response?.data);
       } else {
@@ -181,14 +179,11 @@ const AlbumContainer = ({
       console.log(error);
       if (error instanceof AxiosError && error.response?.status === 404) {
         Alert.alert(
-          '사진 분류 오류',
+          '',
           '등록된 나의 사진이 없습니다. 마이페이지에서 사진을 등록해주세요.',
         );
       } else {
-        Alert.alert(
-          '사진 분류 오류',
-          '나의 사진 분류 도중 오류가 발생했습니다.',
-        );
+        Alert.alert('', '나의 사진 분류 도중 오류가 발생했습니다.');
       }
     } finally {
       setLoading(false);
@@ -200,9 +195,7 @@ const AlbumContainer = ({
     setSelectedPhotos([]);
     try {
       if (isGroup) {
-        console.log(groupId);
         const response = await api.post(`/img/${groupId}/food`);
-        console.log(response?.data);
         setIsClassified(true);
         setClassifiedImg(response?.data);
       } else {
@@ -219,12 +212,10 @@ const AlbumContainer = ({
   };
 
   const handleSelectOption = async (optionId: string) => {
-    toggleOptionModal();
     if (optionId === 'mine') {
       toggleOptionModal();
       handleClassifyMine();
     } else if (optionId === 'scenary') {
-      toggleOptionModal();
       Alert.alert('', '준비중입니다.');
     } else if (optionId === 'food') {
       toggleOptionModal();
@@ -285,8 +276,12 @@ const AlbumContainer = ({
 
       setLoading(true);
 
+      const originalUris = selectedPhotos.map((uri) =>
+        uri.replace('/thumbnail/', '/original/'),
+      );
+
       await Promise.all(
-        selectedPhotos.map(async (uri) => {
+        originalUris.map(async (uri) => {
           const newUuid = uuid.v4();
           const fileName = isGroup
             ? `group_${groupId}_${newUuid}.jpg`
