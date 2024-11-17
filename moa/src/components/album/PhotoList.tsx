@@ -3,8 +3,6 @@ import styled from 'styled-components/native';
 import PhotoListItem from './PhotoListItem';
 import {Images} from '../../types/moment';
 import {GroupImages} from '../../types/group';
-import useNotificationStore from '../../stores/notifyStores';
-import api from '../../utils/api';
 
 const Container = styled.View`
   width: 100%;
@@ -45,14 +43,6 @@ const PhotoList = ({
 
   let imageArray: string[] = [];
 
-  // 사진 개수 상태 useRef로 관리
-  const [isInitialized, setIsInitialized] = useState(false); // 초기 렌더링 상태
-  const prevImageCountRef = useRef<number>(imageArray.length);
-  console.log('맨처음 prev~', prevImageCountRef.current);
-  // groupId, momentId 불러오기
-  const {groupId} = useNotificationStore();
-  console.log('그룹 id? ', groupId);
-
   if (isGroup) {
     Object.values(images.thumbImgs as Record<string, string[]>).forEach(
       (array) => {
@@ -76,66 +66,6 @@ const PhotoList = ({
   useEffect(() => {
     onSelectionChange(selectedPhotos);
   }, [onSelectionChange, selectedPhotos]);
-
-  // 초기화 완료
-  useEffect(() => {
-    // imageArray 초기화 완료 상태 확인
-    if (!isInitialized && imageArray.length > 0) {
-      setIsInitialized(true); // 초기화 완료
-      prevImageCountRef.current = imageArray.length; // 초기값 설정
-      console.log('초기 렌더링 완료. 초기값 설정:', imageArray.length);
-    }
-  }, [imageArray]);
-
-  // 사진 개수 변화 감지
-  useEffect(() => {
-    if (!isInitialized) {
-      // 초기화 완료 전에는 작업하지 않음
-      console.log('초기화 중입니다. 작업하지 않습니다.');
-      return;
-    }
-
-    console.log('기존 사진 개수: ', prevImageCountRef.current);
-
-    if (imageArray.length > prevImageCountRef.current) {
-      // 사진 추가 감지
-      console.log('사진 추가!');
-      const sendNotification = async () => {
-        try {
-          // api 명세서상에는 그룹 푸쉬알람만 되어 잇음
-          // 추후 순간 푸쉬알림이 구현되면 주석 해제
-          // const payload = groupId
-          //   ? { groupId }
-          //   : momentId
-          //   ? { momentId }
-          //   : null;
-
-          // if (payload) {
-          if (groupId) {
-            const response = await api.post('/alarm', groupId);
-
-            if (response.data === 1) {
-              console.log('푸시 알림 전송 성공');
-            } else {
-              console.warn('푸시 알림 전송 실패');
-            }
-          }
-        } catch (error) {
-          console.error('푸시 알림 전송 중 오류:', error);
-        }
-      };
-      sendNotification();
-      prevImageCountRef.current = imageArray.length; // 현재 이미지 개수 업데이트
-      console.log(
-        '지금은? 현재 PrevImageCountRef.current 개수: ',
-        prevImageCountRef.current,
-      );
-    }
-
-    // setPrevImageCount(imageArray.length); // 현재 이미지 개수 업데이트
-
-    // }, [imageArray.length, groupId, momentId, prevImageCount]);
-  }, [imageArray.length, groupId, isInitialized]);
 
   return (
     <Container
