@@ -5,7 +5,6 @@ import ScreenContainer from '../../components/common/ScreenContainer';
 import MemberList from '../../components/member/MemberList';
 import styled from 'styled-components/native';
 import MomentDetailHeader from '../../components/moment/momentDetail/MomentDetailHeader';
-import Partition from '../../components/common/Partition';
 import {
   HomeStackParamList,
   StackHeaderNavigationProp,
@@ -24,10 +23,9 @@ import {MomentInfoDetail} from '../../types/moment';
 import {Alert, RefreshControl} from 'react-native';
 import PinPostModal from '../../components/common/modal/PinPostModal';
 import {AxiosError} from 'axios';
+import Partition from '../../components/common/Partition';
 
-const Container = styled.ScrollView.attrs({
-  nestedScrollEnabled: true,
-})`
+const FlatListWrapper = styled.FlatList`
   width: 100%;
 `;
 
@@ -110,43 +108,57 @@ const MomentDetail: React.FC = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await getMomentDetail(); // 새로고침 시 데이터를 다시 불러옴
-    setRefreshing(false); // 새로고침 완료 후 false로 설정
+    await getMomentDetail();
+    setRefreshing(false);
   }, []);
 
-  useEffect(() => {
-    if (refreshing) {
-      getMomentDetail();
-      onRefresh();
-    }
-  }, [refreshing, onRefresh]);
+  // FlatList의 데이터 구성 (Partition 포함)
+  const data = [
+    {
+      key: 'header',
+      content: (
+        <MomentDetailHeader
+          momentInfoDetail={momentInfoDetail}
+          onLoadingChange={handleLoadingChange}
+        />
+      ),
+    },
+    {key: 'partition1', content: <Partition />},
+    {
+      key: 'members',
+      content: (
+        <MemberList
+          owner={momentInfoDetail.momentOwner}
+          memberList={momentInfoDetail.members}
+        />
+      ),
+    },
+    {key: 'partition2', content: <Partition />},
+    {
+      key: 'album',
+      content: (
+        <AlbumContainer
+          title="공유된 사진"
+          momentId={momentId}
+          images={momentInfoDetail.images}
+        />
+      ),
+    },
+  ];
 
   return (
     <ScreenContainer>
       {loading || enterLoading ? (
         <LoadingSpinner isDark={false} />
       ) : (
-        <Container
+        <FlatListWrapper
+          data={data}
+          keyExtractor={(item) => item.key}
+          renderItem={({item}) => item.content}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-        >
-          <MomentDetailHeader
-            momentInfoDetail={momentInfoDetail}
-            onLoadingChange={handleLoadingChange}
-          />
-          <Partition />
-          <MemberList
-            owner={momentInfoDetail.momentOwner}
-            memberList={momentInfoDetail.members}
-          />
-          <Partition />
-          <AlbumContainer
-            title="공유된 사진"
-            momentId={momentId}
-            images={momentInfoDetail.images}
-          />
-        </Container>
+        />
       )}
       <PinPostModal
         id={momentId}

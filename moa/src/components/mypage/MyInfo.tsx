@@ -5,6 +5,7 @@ import {IconButton} from '../common/button/IconButton';
 import {useUserStore} from '../../stores/userStores';
 import {TextInput, TouchableOpacity} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
+import FastImage from 'react-native-fast-image';
 
 interface TextProps {
   variant: 'title' | 'subtitle' | 'body';
@@ -73,7 +74,7 @@ const IconButtonStyled = styled.View`
   right: 8px;
 `;
 
-const MyProfile = styled.Image`
+const MyProfile = styled(FastImage)`
   border-radius: 50px;
   border: 1px solid ${(props) => props.theme.colors.lightgray};
   width: 75px;
@@ -87,7 +88,6 @@ const MyInfo = () => {
     useUserStore();
   const [isEditing, setIsEditing] = useState(false);
   const [userName, setUserName] = useState(user?.userName || '');
-  // const [userImage, setUserImage] = useState(user?.userImage || '');
   const [userImage, setUserImage] = useState('');
   const [imageFile, setImageFile] = useState<{
     uri: string;
@@ -194,7 +194,7 @@ const MyInfo = () => {
                 borderColor: theme.colors.maindarkorange,
                 borderRadius: 7,
                 borderWidth: 1,
-                textAlignVertical: 'bottom', // 텍스트를 수직 중앙 정렬
+                textAlignVertical: 'center', // 텍스트를 수직 중앙 정렬
                 margin: 0,
                 padding: 0,
                 paddingLeft: 8,

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useEffect, useState} from 'react';
 import ScreenContainer from '../../components/common/ScreenContainer';
@@ -17,7 +18,6 @@ import AlbumContainer from '../../components/album/AlbumContainer';
 import MemberList from '../../components/member/MemberList';
 import {lightColorMap, darkColorMap} from '../../utils/groupColor';
 import Partition from '../../components/common/Partition';
-import styled from 'styled-components/native';
 import api from '../../utils/api';
 import {GroupInfoDetail} from '../../types/group';
 import {AxiosError} from 'axios';

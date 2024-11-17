@@ -22,7 +22,7 @@ const Texts = styled.Text<TextProps>`
       case 'title':
         return css`
           font-size: 22px;
-          font-family: ${theme.fontFamily.SCDream8};
+          font-family: ${theme.fontFamily.SCDream6};
           color: ${textColor};
           margin: 0 0 10px 0;
         `;
