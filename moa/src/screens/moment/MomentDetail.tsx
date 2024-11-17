@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useCallback, useEffect, useState} from 'react';
+import {FlatList, RefreshControl, Alert, View} from 'react-native';
 import ScreenContainer from '../../components/common/ScreenContainer';
 import MemberList from '../../components/member/MemberList';
-import styled from 'styled-components/native';
 import MomentDetailHeader from '../../components/moment/momentDetail/MomentDetailHeader';
 import {
   HomeStackParamList,
@@ -20,14 +20,14 @@ import AlbumContainer from '../../components/album/AlbumContainer';
 import api from '../../utils/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import {MomentInfoDetail} from '../../types/moment';
-import {Alert, RefreshControl} from 'react-native';
 import PinPostModal from '../../components/common/modal/PinPostModal';
 import {AxiosError} from 'axios';
 import Partition from '../../components/common/Partition';
 
-const FlatListWrapper = styled.FlatList`
-  width: 100%;
-`;
+type FlatListDataItem = {
+  key: string;
+  content: JSX.Element;
+};
 
 type MomentDetailRouteProp = RouteProp<HomeStackParamList, 'MomentDetail'>;
 
@@ -112,8 +112,7 @@ const MomentDetail: React.FC = () => {
     setRefreshing(false);
   }, []);
 
-  // FlatList의 데이터 구성 (Partition 포함)
-  const data = [
+  const data: FlatListDataItem[] = [
     {
       key: 'header',
       content: (
@@ -151,10 +150,10 @@ const MomentDetail: React.FC = () => {
       {loading || enterLoading ? (
         <LoadingSpinner isDark={false} />
       ) : (
-        <FlatListWrapper
+        <FlatList
           data={data}
           keyExtractor={(item) => item.key}
-          renderItem={({item}) => item.content}
+          renderItem={({item}) => <View>{item.content}</View>}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
