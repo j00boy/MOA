@@ -145,13 +145,10 @@ const GroupDetailHeader = ({
     setLoading(true);
     try {
       await api.delete(`/group/${group.groupId}`);
-      Alert.alert(
-        '그룹 삭제 완료',
-        `${group.groupName} 그룹의 삭제가 완료되었습니다.`,
-      );
+      Alert.alert('', `${group.groupName} 그룹의 삭제가 완료되었습니다.`);
       navigation.navigate('Home');
     } catch {
-      Alert.alert('그룹 삭제 실패', '그룹 삭제 도중 오류가 발생했습니다.');
+      Alert.alert('', '그룹 삭제 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -161,10 +158,10 @@ const GroupDetailHeader = ({
     setLoading(true);
     try {
       await api.delete(`/group/${group.groupId}/leave`);
-      Alert.alert('그룹 나가기 완료', `${group.groupName} 그룹을 나갔습니다.`);
+      Alert.alert('', `${group.groupName} 그룹을 나갔습니다.`);
       navigation.navigate('Home');
     } catch {
-      Alert.alert('그룹 나가기 실패', '그룹 탈퇴 도중 오류가 발생했습니다.');
+      Alert.alert('', '그룹 탈퇴 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }

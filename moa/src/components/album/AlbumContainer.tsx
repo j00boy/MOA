@@ -194,7 +194,7 @@ const AlbumContainer = ({
         const response = await api.get(`/img/${groupId}/${momentId}/food`);
       }
     } catch (error: unknown) {
-      Alert.alert('사진 분류 오류', '음식 사진 분류 도중 오류가 발생했습니다.');
+      Alert.alert('', '음식 사진 분류 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -255,7 +255,7 @@ const AlbumContainer = ({
     }
 
     if (selectedPhotos.length === 0) {
-      Alert.alert('선택된 사진이 없습니다.');
+      Alert.alert('', '선택된 사진이 없습니다.');
       return;
     }
     try {
