@@ -11,6 +11,7 @@ import {Images} from '../../types/moment';
 import {GroupImages} from '../../types/group';
 import api from '../../utils/api';
 import {AxiosError} from 'axios';
+import ComparedPhotoList from './ComparedPhotoList';
 
 const Container = styled.View`
   width: 100%;
@@ -142,6 +143,8 @@ const AlbumContainer = ({
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
   const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isClassified, setIsClassified] = useState(false);
+  const [classifiedImg, setClassifiedImg] = useState<string[]>([]);
 
   const theme = useTheme();
 
@@ -161,13 +164,21 @@ const AlbumContainer = ({
 
   const handleClassifyMine = async () => {
     setLoading(true);
+    setSelectedPhotos([]);
     try {
       if (isGroup) {
-        const response = await api.get(`/img/${groupId}/compare`);
+        console.log(groupId);
+        const response = await api.post(`/img/${groupId}/compare`);
+        console.log(response?.data);
+        setIsClassified(true);
+        setClassifiedImg(response?.data);
       } else {
-        const response = await api.get(`/img/${groupId}/${momentId}/compare`);
+        const response = await api.post(`/img/602/${momentId}/compare`);
+        setIsClassified(true);
+        setClassifiedImg(response?.data);
       }
     } catch (error: unknown) {
+      console.log(error);
       if (error instanceof AxiosError && error.response?.status === 404) {
         Alert.alert(
           '사진 분류 오류',
@@ -186,14 +197,21 @@ const AlbumContainer = ({
 
   const handleClassifyFood = async () => {
     setLoading(true);
+    setSelectedPhotos([]);
     try {
       if (isGroup) {
         console.log(groupId);
-        const response = await api.get(`/img/${groupId}/food`);
+        const response = await api.post(`/img/${groupId}/food`);
+        console.log(response?.data);
+        setIsClassified(true);
+        setClassifiedImg(response?.data);
       } else {
-        const response = await api.get(`/img/${groupId}/${momentId}/food`);
+        const response = await api.post(`/img/602/${momentId}/food`);
+        setIsClassified(true);
+        setClassifiedImg(response?.data);
       }
     } catch (error: unknown) {
+      console.log(error);
       Alert.alert('', '음식 사진 분류 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
@@ -288,6 +306,8 @@ const AlbumContainer = ({
         }),
       );
 
+      setSelectedPhotos([]);
+      setSelectMode(false);
       Alert.alert(
         '다운로드 완료',
         '선택된 이미지들이 갤러리에 저장되었습니다.',
@@ -347,13 +367,23 @@ const AlbumContainer = ({
           </ModalItemContainer>
         ))}
       </StyledModal>
-      <PhotoList
-        images={images}
-        isGroup={isGroup}
-        expiredAt={expiredAt}
-        isSelectMode={selectMode}
-        onSelectionChange={setSelectedPhotos}
-      />
+      {isClassified ? (
+        <ComparedPhotoList
+          images={classifiedImg}
+          isSelectMode={selectMode}
+          selectedPhotos={selectedPhotos}
+          onSelectionChange={setSelectedPhotos}
+        />
+      ) : (
+        <PhotoList
+          images={images}
+          isGroup={isGroup}
+          expiredAt={expiredAt}
+          isSelectMode={selectMode}
+          selectedPhotos={selectedPhotos}
+          onSelectionChange={setSelectedPhotos}
+        />
+      )}
       {loading && <LoadingSpinner />}
     </Container>
   );
