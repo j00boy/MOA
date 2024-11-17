@@ -22,15 +22,15 @@ const Container = styled.View`
 
 const LogoContainer = styled.View`
   flex-direction: column;
-  height: 170px;
+  height: 210px;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 120px;
 `;
 
 const Logo = styled.Image`
-  width: 160px;
-  height: 110px;
+  width: 190px;
+  height: 140px;
 `;
 
 const Explain = styled.Text`
