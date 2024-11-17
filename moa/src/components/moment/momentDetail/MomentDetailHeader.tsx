@@ -1,18 +1,18 @@
+/* eslint-disable react-native/no-inline-styles */
 import {Alert, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {MomentInfoDetail} from '../../../types/moment';
 import styled, {useTheme} from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import StyledModal from '../../common/modal/StyledModal';
-import {onShare} from '../../../utils/share';
 import PinModal from '../../common/modal/PinModal';
-import {sendFeedMessage} from '../../../utils/kakaoshare';
 import {AppHeaderNavigationProp} from '../../../types/screen';
 import {useNavigation} from '@react-navigation/native';
 import {formatDate} from '../../../utils/common';
 import {useAuthStore} from '../../../stores/authStores';
 import api from '../../../utils/api';
 import Timer from './Timer';
+import ShareModal from '../../common/modal/ShareModal';
 
 const Container = styled.View`
   width: 100%;
@@ -89,6 +89,7 @@ const MomentDetailHeader = ({
   const userId = useAuthStore((state: {userId: unknown}) => state.userId);
   const [isOptionModalVisible, setOptionModalVisible] = useState(false);
   const [isPinModalVisible, setPinModalVisible] = useState(false);
+  const [isShareModalVisible, setShareModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<AppHeaderNavigationProp>();
@@ -99,6 +100,10 @@ const MomentDetailHeader = ({
 
   const togglePinModal = () => {
     setPinModalVisible(!isPinModalVisible);
+  };
+
+  const toggleShareModal = () => {
+    setShareModalVisible(!isShareModalVisible);
   };
 
   useEffect(() => {
@@ -116,18 +121,6 @@ const MomentDetailHeader = ({
           {id: 'pin', label: 'PIN번호 보기'},
           {id: 'exit', label: '순간 나가기'},
         ];
-
-  const handleShare = () => {
-    // onShare(
-    //   `${momentInfoDetail.momentName} 순간`,
-    //   `https://k11a602.p.ssafy.io/moment/${momentInfoDetail.id}`,
-    // );
-
-    sendFeedMessage(
-      `${momentInfoDetail.momentName} 순간`,
-      `moment/${momentInfoDetail.id}`,
-    );
-  };
 
   const handleDeleteMoment = async () => {
     setLoading(true);
@@ -195,11 +188,21 @@ const MomentDetailHeader = ({
         {/* <LeftTime>남은 시간 타이머</LeftTime> */}
         <Timer createdAt={momentInfoDetail.createdAt} />
         <IconContainer>
-          <TouchableOpacity onPress={handleShare}>
+          <TouchableOpacity
+            onPress={toggleShareModal}
+            style={{position: 'relative'}}
+          >
             <Icon
               name="share-social-sharp"
               size={22}
               color={theme.colors.maindarkorange}
+            />
+            <ShareModal
+              isGroup={false}
+              id={momentInfoDetail.id}
+              name={momentInfoDetail.momentName}
+              visible={isShareModalVisible}
+              toggleModal={toggleShareModal}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={toggleOptionModal}>

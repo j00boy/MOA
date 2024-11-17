@@ -89,10 +89,7 @@ const GroupDetail: React.FC = () => {
       if (error instanceof AxiosError && error.response?.data.status === 403) {
         toggleModal();
       } else {
-        Alert.alert(
-          '그룹 조회 오류',
-          '나의 그룹 조회 도중 오류가 발생했습니다.',
-        );
+        Alert.alert('', '나의 그룹 조회 도중 오류가 발생했습니다.');
       }
     } finally {
       setLoading(false);

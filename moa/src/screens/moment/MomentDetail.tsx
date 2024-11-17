@@ -78,7 +78,6 @@ const MomentDetail: React.FC = () => {
       const response = await api.get(`/moment/${momentId}`);
       setMomentInfoDetail(response?.data);
       setEnterLoading(false);
-      console.log(response?.data);
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.data.status === 403) {
         toggleModal();

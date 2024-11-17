@@ -1,21 +1,22 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
 import {Group} from '../../../types/group';
 import GroupIconButton from '../../common/button/GroupIconButton';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Alert, TouchableOpacity} from 'react-native';
-import {onShare} from '../../../utils/share';
 import StyledModal from '../../common/modal/StyledModal';
 import PinModal from '../../common/modal/PinModal';
 import {AppHeaderNavigationProp} from '../../../types/screen';
 import {useNavigation} from '@react-navigation/native';
-import {sendFeedMessage} from '../../../utils/kakaoshare';
 import {useAuthStore} from '../../../stores/authStores';
 import {Member} from '../../../types/moment';
 import api from '../../../utils/api';
+import ShareModal from '../../common/modal/ShareModal';
 
 const Container = styled.View`
   width: 100%;
+  z-index: 1;
 `;
 
 const ContentBox = styled.View<{backcolor: string}>`
@@ -107,6 +108,7 @@ const GroupDetailHeader = ({
 
   const [isOptionModalVisible, setOptionModalVisible] = useState(false);
   const [isPinModalVisible, setPinModalVisible] = useState(false);
+  const [isShareModalVisible, setShareModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<AppHeaderNavigationProp>();
@@ -117,6 +119,10 @@ const GroupDetailHeader = ({
 
   const togglePinModal = () => {
     setPinModalVisible(!isPinModalVisible);
+  };
+
+  const toggleShareModal = () => {
+    setShareModalVisible(!isShareModalVisible);
   };
 
   useEffect(() => {
@@ -191,15 +197,6 @@ const GroupDetailHeader = ({
     }
   };
 
-  const handleShare = () => {
-    // onShare(
-    //   `${momentInfoDetail.momentName} 순간`,
-    //   `https://k11a602.p.ssafy.io/moment/${momentInfoDetail.id}`,
-    // );
-
-    sendFeedMessage(`${group.groupName} 그룹`, `group/${group.groupId}`);
-  };
-
   return (
     <Container>
       <ContentBox backcolor={lightColor}>
@@ -242,8 +239,18 @@ const GroupDetailHeader = ({
             {group.groupTotalImages}장
           </PhotoNumText>
         </LineContainer>
-        <TouchableOpacity onPress={handleShare}>
+        <TouchableOpacity
+          onPress={toggleShareModal}
+          style={{position: 'relative'}}
+        >
           <Icon name="share-social-sharp" size={25} color={darkColor} />
+          <ShareModal
+            isGroup={true}
+            id={group.groupId}
+            name={group.groupName}
+            visible={isShareModalVisible}
+            toggleModal={toggleShareModal}
+          />
         </TouchableOpacity>
       </AlbumInfo>
     </Container>

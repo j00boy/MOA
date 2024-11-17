@@ -2,12 +2,12 @@ import React from 'react';
 import styled, {useTheme} from 'styled-components/native';
 import {ActivityIndicator} from 'react-native';
 
-const LoadingOverlay = styled.View<{isDark: boolean}>`
+const LoadingOverlay = styled.View<{isDark: boolean; isScreen: boolean}>`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: ${({isScreen}) => (isScreen ? '80px' : '0')};
   justify-content: center;
   align-items: center;
   ${({isDark}) =>
@@ -18,13 +18,17 @@ const LoadingOverlay = styled.View<{isDark: boolean}>`
 
 interface LoadingSpinnerProps {
   isDark?: boolean;
+  isScreen?: boolean;
 }
 
-const LoadingSpinner = ({isDark = true}: LoadingSpinnerProps) => {
+const LoadingSpinner = ({
+  isDark = true,
+  isScreen = true,
+}: LoadingSpinnerProps) => {
   const theme = useTheme();
 
   return (
-    <LoadingOverlay isDark={isDark}>
+    <LoadingOverlay isDark={isDark} isScreen={isScreen}>
       <ActivityIndicator size="large" color={theme.colors.maindarkorange} />
     </LoadingOverlay>
   );

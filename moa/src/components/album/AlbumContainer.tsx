@@ -9,6 +9,8 @@ import uuid from 'react-native-uuid';
 import LoadingSpinner from '../common/LoadingSpinner';
 import {Images} from '../../types/moment';
 import {GroupImages} from '../../types/group';
+import api from '../../utils/api';
+import {AxiosError} from 'axios';
 
 const Container = styled.View`
   width: 100%;
@@ -157,15 +159,58 @@ const AlbumContainer = ({
     setIsOptionModalVisible(!isOptionModalVisible);
   };
 
-  const handleSelectOption = (optionId: string) => {
-    toggleOptionModal();
+  const handleClassifyMine = async () => {
+    setLoading(true);
+    try {
+      if (isGroup) {
+        const response = await api.get(`/img/${groupId}/compare`);
+      } else {
+        const response = await api.get(`/img/${groupId}/${momentId}/compare`);
+      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        Alert.alert(
+          '사진 분류 오류',
+          '등록된 나의 사진이 없습니다. 마이페이지에서 사진을 등록해주세요.',
+        );
+      } else {
+        Alert.alert(
+          '사진 분류 오류',
+          '나의 사진 분류 도중 오류가 발생했습니다.',
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleClassifyFood = async () => {
+    setLoading(true);
+    try {
+      if (isGroup) {
+        console.log(groupId);
+        const response = await api.get(`/img/${groupId}/food`);
+      } else {
+        const response = await api.get(`/img/${groupId}/${momentId}/food`);
+      }
+    } catch (error: unknown) {
+      Alert.alert('사진 분류 오류', '음식 사진 분류 도중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectOption = async (optionId: string) => {
+    toggleOptionModal();
     if (optionId === 'mine') {
       toggleOptionModal();
+      handleClassifyMine();
     } else if (optionId === 'scenary') {
       toggleOptionModal();
+      Alert.alert('', '준비중입니다.');
     } else if (optionId === 'food') {
       toggleOptionModal();
+      handleClassifyFood();
     }
   };
 

@@ -102,14 +102,18 @@ const TabNavigator: React.FC = () => (
 
 // 딥링크 설정
 const linking: LinkingOptions<AppParamList> = {
-  prefixes: ['moa://', 'https://k11a602.p.ssafy.io'],
+  prefixes: [
+    'kakao4a3fdb040f645b2e0bba4c975b6b8ba5://',
+    'moa://',
+    'https://k11a602.p.ssafy.io',
+  ],
   config: {
     screens: {
       Bottom: {
         screens: {
           HomeStack: {
             screens: {
-              Home: 'home',
+              Home: '',
               GroupDetail: 'group/:groupId',
               MomentDetail: 'moment/:momentId',
             },
@@ -128,16 +132,33 @@ const StyledSafeAreaView = styled.SafeAreaView`
 const App = () => {
   const {isAuthenticated, checkAuthStatus} = useAuthStore();
   const [loading, setLoading] = useState(true);
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
 
-  const navigationRef = useRef<NavigationContainerRef<AppParamList>>(null);
+  const navigationRef = useRef<NavigationContainerRef<AppParamList>>();
 
   // 링크 열기 시 실행할 메소드 정의
   const handleOpenURL = (event: {url: string}) => {
     const {url} = event;
     console.log('Opened from link:', url);
 
+    if (url.includes('group')) {
+      const groupId = url.includes('kakao')
+        ? url.split('=').pop()
+        : url.split('/').pop();
+
+      if (groupId) {
+        navigationRef.current?.navigate('HomeStack', {
+          screen: 'GroupDetail',
+          params: {groupId},
+        });
+      }
+    }
+
     if (url.includes('moment')) {
-      const momentId = url.split('/').pop();
+      const momentId = url.includes('kakao')
+        ? url.split('=').pop()
+        : url.split('/').pop();
+
       if (momentId) {
         navigationRef.current?.navigate('HomeStack', {
           screen: 'MomentDetail',
@@ -148,16 +169,15 @@ const App = () => {
   };
 
   useEffect(() => {
-    Linking.getInitialURL().then((url) => {
-      if (url) handleOpenURL({url});
-    });
+    if (isNavigationReady) {
+      Linking.getInitialURL().then((url) => {
+        if (url) handleOpenURL({url});
+      });
 
-    const urlListener = Linking.addListener('url', handleOpenURL);
-
-    return () => {
-      urlListener.remove();
-    };
-  }, []);
+      const urlListener = Linking.addListener('url', handleOpenURL);
+      return () => urlListener.remove();
+    }
+  }, [isNavigationReady]);
 
   useEffect(() => {
     const initAuthStatus = async () => {
@@ -198,7 +218,15 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
       <StyledSafeAreaView>
-        <NavigationContainer linking={linking} ref={navigationRef}>
+        <NavigationContainer
+          linking={linking}
+          ref={(ref) => {
+            if (ref) {
+              navigationRef.current = ref;
+              setIsNavigationReady(true);
+            }
+          }}
+        >
           <RootStack.Navigator>
             {isAuthenticated ? (
               <>
