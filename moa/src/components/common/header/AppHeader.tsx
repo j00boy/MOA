@@ -14,7 +14,7 @@ const Container = styled.View`
 `;
 
 const Logo = styled.Image`
-  width: 50px;
+  width: 80px;
   height: 30px;
 `;
 
@@ -37,7 +37,7 @@ const AppHeader = ({navigation}: AppHeaderProps) => {
 
   return (
     <Container>
-      <Logo source={require('../../../assets/images/logo.png')} />
+      <Logo source={require('../../../assets/images/header_logo.png')} />
       <ButtonLine>
         <IconButton onPress={() => navigation.navigate('Add')}>
           <Icon

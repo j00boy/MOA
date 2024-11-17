@@ -241,7 +241,7 @@ const AlbumContainer = ({
       }
       return true;
     } catch (err) {
-      console.warn(err);
+      console.log(err);
       return false;
     }
   };
