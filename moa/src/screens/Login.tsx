@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 // src/screens/KakaoTestScreen.tsx
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
+import {Animated, Easing} from 'react-native';
 import {
   login,
   logout,
@@ -41,6 +42,30 @@ const Explain = styled.Text`
 
 const Login = () => {
   // const [result, setResult] = useState<string | null>(null);
+  const bounceAnimation = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const bounce = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(bounceAnimation, {
+            toValue: -10, // Move up by 10px
+            duration: 500,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(bounceAnimation, {
+            toValue: 0, // Return to original position
+            duration: 500,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ]),
+      ).start();
+    };
+
+    bounce();
+  }, [bounceAnimation]);
 
   // const signInWithKakao = async () => {
   //   try {
@@ -106,7 +131,9 @@ const Login = () => {
     <ScreenContainer>
       <Container>
         <LogoContainer>
-          <Logo source={require('../assets/images/MOA_logo.png')} />
+          <Animated.View style={{transform: [{translateY: bounceAnimation}]}}>
+            <Logo source={require('../assets/images/MOA_logo.png')} />
+          </Animated.View>
           <Explain>소중한 순간, 쉽고 빠르게 나눠요</Explain>
         </LogoContainer>
         <LoginButton />
