@@ -51,13 +51,8 @@ const MomentDetail: React.FC = () => {
   const [enterLoading, setEnterLoading] = useState(false);
   const [isPinModalVisible, setIsPinModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  // momentId 저장 함수 호출
-  // const {setMomentId} = useNotificationStore();
+
   const momentId = route.params.momentId;
-  // 순간 ID 설정
-  // useEffect(() => {
-  //   setMomentId(momentId);
-  // }, [momentId]);
 
   const toggleModal = () => {
     setIsPinModalVisible(!isPinModalVisible);

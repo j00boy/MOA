@@ -181,9 +181,6 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
         // 사진 업로드 성공 후 알림 전송
         await sendNotification(Number(id));
 
-        // 사진 업로드 성공 후 알림 전송
-        await sendNotification(Number(id));
-
         Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
         navigation.navigate('GroupDetail', {groupId: id});
       } else {
