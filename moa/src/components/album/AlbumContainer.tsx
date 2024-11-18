@@ -237,7 +237,7 @@ const AlbumContainer = ({
         if (Platform.Version >= 30) {
           // Android 11 이상: MANAGE_EXTERNAL_STORAGE 권한 필요 -> WRITE이어도 되는데 나중에 배포 후 재테스트
           const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            PermissionsAndroid.PERMISSIONS.MANAGE_EXTERNAL_STORAGE,
           );
           return granted === PermissionsAndroid.RESULTS.GRANTED;
         } else {
@@ -258,10 +258,10 @@ const AlbumContainer = ({
   // 사진 다운로드
   const handleDownload = async () => {
     const hasPermission = await requestStoragePermission();
-    if (!hasPermission) {
-      Alert.alert('권한 요청', '사진을 저장하려면 접근 권한이 필요합니다.');
-      return;
-    }
+    // if (!hasPermission) {
+    //   Alert.alert('권한 요청', '사진을 저장하려면 접근 권한이 필요합니다.');
+    //   return;
+    // }
 
     if (selectedPhotos.length === 0) {
       Alert.alert('', '선택된 사진이 없습니다.');

@@ -17,15 +17,16 @@ export const kakaoShare = async (
   key: string,
   id: string,
   message: string,
+  pin: string,
   deepLink: string,
 ) => {
   try {
     await KakaoShareLink.sendFeed({
       content: {
-        title: 'MOA에 초대합니다!',
+        title: `MOA에 초대합니다! ${message}`,
         imageUrl:
           'https://moa-s3-bucket.s3.ap-northeast-2.amazonaws.com//logo/MOA_logo.png',
-        description: `${message}`,
+        description: `PIN번호: ${pin}`,
         // imageWidth?: number;
         // imageHeight?: number;
         link: {

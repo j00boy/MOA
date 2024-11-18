@@ -45,6 +45,7 @@ interface ShareModalProps {
   isGroup?: boolean;
   id: string;
   name: string;
+  pin: string;
   visible: boolean;
   toggleModal: () => void;
 }
@@ -53,6 +54,7 @@ const ShareModal = ({
   isGroup = false,
   id,
   name,
+  pin,
   visible,
   toggleModal,
 }: ShareModalProps) => {
@@ -75,7 +77,7 @@ const ShareModal = ({
   };
 
   const handleKakaoShare = () => {
-    kakaoShare(isGroup ? 'groupId' : 'momentId', id, message, deepLink);
+    kakaoShare(isGroup ? 'groupId' : 'momentId', id, message, pin, deepLink);
   };
 
   const handleShareLink = () => {
