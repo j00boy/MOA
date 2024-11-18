@@ -10,12 +10,12 @@ const Container = styled.View<{isGroup: boolean}>`
   height: 50px;
   padding: 10px 15px;
   position: absolute;
-  right: ${({isGroup}) => (isGroup ? '0' : '-35px')};
-  top: 27px;
+  right: ${({isGroup}) => (isGroup ? '0' : '10px')};
+  top: ${({isGroup}) => (isGroup ? '27px' : '50px')};
   background-color: ${({theme}) => theme.colors.white};
   border: solid 1px ${({theme}) => theme.colors.mediumgray};
   border-radius: 10px;
-  z-index: 9;
+  z-index: 2;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;

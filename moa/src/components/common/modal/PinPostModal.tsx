@@ -17,7 +17,7 @@ const ContentContainer = styled.View`
   align-items: center;
   justify-content: center;
   position: relative;
-  z-index: 99;
+  z-index: 3;
 `;
 
 const Title = styled.Text`

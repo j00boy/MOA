@@ -58,9 +58,15 @@ const MemberListItem = ({
   isMe,
   isOwner,
 }: MemberListItemProps) => {
+  const cacheBuster = Date.now(); // 고유 쿼리 생성
+  const updatedUri = `${userImage}?cache=${cacheBuster}`; // URL에 쿼리 파라미터 추가
+
   return (
     <Container itemSize={itemSize}>
-      <StyledImage source={{uri: userImage}} itemSize={itemSize} />
+      <StyledImage
+        source={{uri: updatedUri, priority: FastImage.priority.normal}}
+        itemSize={itemSize}
+      />
       <NameLine>
         {isMe ? (
           <>

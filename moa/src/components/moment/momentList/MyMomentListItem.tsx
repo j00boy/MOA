@@ -31,7 +31,7 @@ const TitleLine = styled.View`
 const Title = styled.Text`
   font-family: SCDream5;
   font-size: 18px;
-  max-width: 70%;
+  max-width: 60%;
   overflow: hidden;
 `;
 

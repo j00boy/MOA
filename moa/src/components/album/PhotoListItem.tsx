@@ -33,6 +33,21 @@ const CheckButton = styled.View`
   align-items: center;
 `;
 
+const RemainingTimeText = styled.Text`
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  background-color: #ffffff54;
+  border-radius: 100px;
+  justify-content: center;
+  align-items: center;
+  font-family: 'SCDream5';
+  font-size: 10px;
+  padding: 0 3px;
+  text-align: center;
+  color: ${({theme}) => theme.colors.lightgray};
+`;
+
 interface PhotoListItemProps {
   uri: string;
   isSelected: boolean;
@@ -40,6 +55,7 @@ interface PhotoListItemProps {
   itemSize: number;
   isLastInRow: boolean;
   isSelectMode?: boolean;
+  remainingTime?: number | null;
 }
 
 const PhotoListItem = ({
@@ -49,6 +65,7 @@ const PhotoListItem = ({
   itemSize,
   isLastInRow,
   isSelectMode = false,
+  remainingTime,
 }: PhotoListItemProps) => {
   const theme = useTheme();
   const navigation = useNavigation<AppNavigationProp>();
@@ -86,6 +103,7 @@ const PhotoListItem = ({
           )}
         </CheckButton>
       )}
+      {remainingTime && <RemainingTimeText>{remainingTime}h</RemainingTimeText>}
     </Container>
   );
 };

@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import PhotoListItem from './PhotoListItem';
 import {Images} from '../../types/moment';
 import {GroupImages} from '../../types/group';
+import {differenceInHours, parseISO} from 'date-fns';
 
 const Container = styled.View`
   width: 100%;
@@ -43,15 +44,24 @@ const PhotoList = ({
   const numColumns = 4;
 
   let imageArray: string[] = [];
+  const remainingTimes: Record<string, number | null> = {};
 
-  if (isGroup) {
-    Object.values(images.thumbImgs as Record<string, string[]>).forEach(
-      (array) => {
-        if (Array.isArray(array)) {
-          imageArray.push(...array);
+  if (isGroup && expiredAt && typeof images.thumbImgs === 'object') {
+    Object.entries(images.thumbImgs).forEach(([key, array]) => {
+      if (Array.isArray(array)) {
+        imageArray.push(...array);
+        const expirationDate = expiredAt[key];
+        if (expirationDate) {
+          const now = new Date();
+          const parsedDate = parseISO(expirationDate);
+          if (parsedDate > now) {
+            remainingTimes[key] = differenceInHours(parsedDate, now);
+          } else {
+            remainingTimes[key] = null;
+          }
         }
-      },
-    );
+      }
+    });
   } else {
     imageArray = images.thumbImgs as string[];
   }
@@ -74,17 +84,32 @@ const PhotoList = ({
         setContainerWidth(width);
       }}
     >
-      {imageArray.map((photo, index) => (
-        <PhotoListItem
-          key={photo}
-          uri={photo}
-          isSelected={selectedPhotos.includes(photo)}
-          onToggleSelect={() => toggleSelect(photo)}
-          itemSize={itemSize}
-          isLastInRow={(index + 1) % numColumns === 0}
-          isSelectMode={isSelectMode}
-        />
-      ))}
+      {imageArray.map((photo, index) => {
+        const associatedKey = isGroup
+          ? Object.keys(images.thumbImgs).find((key) =>
+              (images.thumbImgs as Record<string, string[]>)[key].includes(
+                photo,
+              ),
+            )
+          : null;
+
+        const remainingTime = associatedKey
+          ? remainingTimes[associatedKey]
+          : null;
+
+        return (
+          <PhotoListItem
+            key={photo}
+            uri={photo}
+            isSelected={selectedPhotos.includes(photo)}
+            onToggleSelect={() => toggleSelect(photo)}
+            itemSize={itemSize}
+            isLastInRow={(index + 1) % numColumns === 0}
+            isSelectMode={isSelectMode}
+            remainingTime={remainingTime} // 몇 시간 남았는지 전달
+          />
+        );
+      })}
       {imageArray.length === 0 && <NullText>공유된 사진이 없습니다.</NullText>}
     </Container>
   );
