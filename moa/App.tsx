@@ -35,12 +35,14 @@ import {LinkingOptions} from '@react-navigation/native';
 import {useAuthStore} from './src/stores/authStores';
 import {
   requestUserPermission,
-  setupBackgroundMessageHandler,
+  // setupBackgroundMessageHandler,
   setupForegroundMessageHandler,
   getFcmToken,
   requestNotificationPermission,
+  createNotificationChannel,
 } from './src/utils/FirebaseSettings';
 import PhotoDetail from './src/screens/PhotoDetail';
+import messaging from '@react-native-firebase/messaging';
 
 const Tab = createBottomTabNavigator();
 const RootStack = createStackNavigator();
@@ -183,30 +185,47 @@ const App = () => {
     const initAuthStatus = async () => {
       await checkAuthStatus(); // 로그인 상태 확인
       setLoading(false); // 로딩 완료
-      // await requestUserPermission();
-      // await setupForegroundMessageHandler();
-      // await setupBackgroundMessageHandler();
-      // await getFcmToken();
     };
     initAuthStatus();
   }, [checkAuthStatus]);
 
   // Firebase 알림 권한 요청
-  // useEffect(() => {
-  //   const initFirebasePermissions = async () => {
-  //     await requestUserPermission();
-  //     setupForegroundMessageHandler();
-  //     setupBackgroundMessageHandler();
-  //     await getFcmToken();
-  //   };
-  //   initFirebasePermissions();
-  // }, []);
   useEffect(() => {
     requestUserPermission();
-    setupForegroundMessageHandler();
-    setupBackgroundMessageHandler();
-    getFcmToken();
     requestNotificationPermission();
+    setupForegroundMessageHandler();
+    // setupBackgroundMessageHandler();
+    getFcmToken();
+    createNotificationChannel();
+
+    // 앱이 백그라운드 상태일 때 알림 클릭 처리
+    const unsubscribeBackgroundListener = messaging().onNotificationOpenedApp(
+      (remoteMessage) => {
+        console.log(
+          '백그라운드에서 알림 클릭으로 앱이 열림:',
+          remoteMessage.notification,
+        );
+        // 알림에 따라 네비게이션 또는 추가 작업 처리
+      },
+    );
+
+    // 앱이 종료된 상태에서 알림 클릭 처리
+    messaging()
+      .getInitialNotification()
+      .then((remoteMessage) => {
+        if (remoteMessage) {
+          console.log(
+            '앱이 종료된 상태에서 알림 클릭으로 열림:',
+            remoteMessage.notification,
+          );
+          // 초기화 작업 또는 네비게이션 처리
+        }
+      });
+
+    // 컴포넌트가 unmount될 때 백그라운드 리스너 정리
+    return () => {
+      unsubscribeBackgroundListener();
+    };
   }, []);
   // const navigationRef =
   //   useRef<NavigationContainerRef<HomeStackParamList>>(null);

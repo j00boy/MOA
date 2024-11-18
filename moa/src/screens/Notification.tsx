@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState, useCallback} from 'react';
 import {FlatList} from 'react-native';
 import ScreenContainer from '../components/common/ScreenContainer';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import useNotificationStore from '../stores/notifyStores';
 
 const Container = styled.View`
   flex: 1;
@@ -20,15 +21,14 @@ const NotificationItem = styled.View`
 `;
 const Wrapper = styled.View`
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center;
   width: 310px;
-  margin-bottom: 10px;
 `;
 
 const Title = styled.Text`
   font-size: 16px;
   font-family: ${(props) => props.theme.fontFamily.SCDream5};
+  margin-bottom: 10px;
 `;
 
 const ReceivedAt = styled.Text`
@@ -44,6 +44,27 @@ const Body = styled.Text`
 `;
 
 const Notification = () => {
+  const notifications = useNotificationStore((state) => state.notifications);
+  // 새로고침 상태 관리
+  const [refreshing, setRefreshing] = useState(false);
+  // 알림을 최신순으로 정렬
+  const sortedNotifications = notifications.sort(
+    (a, b) =>
+      new Date(b.receivedAt || '').getTime() -
+      new Date(a.receivedAt || '').getTime(),
+  );
+
+  // 새로고침 동작 정의
+  const onRefresh = useCallback(() => {
+    setRefreshing(true); // 새로고침 상태 시작
+
+    // 새로운 데이터를 가져오거나 업데이트
+    setTimeout(() => {
+      // 실제로는 API 호출 등을 통해 데이터를 갱신
+      console.log('새로고침 완료!');
+      setRefreshing(false); // 새로고침 상태 종료
+    }, 2000); // 2초 딜레이 (예시용)
+  }, []);
   const dummyNotifications = [
     {
       id: 1,
@@ -66,10 +87,10 @@ const Notification = () => {
   ];
 
   // 새로운 알림이 위로 오도록 정렬
-  const sortedNotifications = dummyNotifications.sort(
-    (a, b) =>
-      new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime(),
-  );
+  // const sortedNotifications = dummyNotifications.sort(
+  //   (a, b) =>
+  //     new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime(),
+  // );
 
   return (
     <ScreenContainer>
@@ -79,18 +100,24 @@ const Notification = () => {
       <Container>
         <FlatList
           data={sortedNotifications}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) =>
+            item.id?.toString() || Math.random().toString()
+          }
           renderItem={({item}) => (
             <NotificationItem>
+              {/* <Wrapper> */}
+              <Title>{item.title}</Title>
+              {/* </Wrapper> */}
+              <Body>{item.body}</Body>
               <Wrapper>
-                <Title>{item.title}</Title>
                 <ReceivedAt>
-                  {new Date(item.receivedAt).toLocaleString()}
+                  {new Date(item.receivedAt || '').toLocaleString()}
                 </ReceivedAt>
               </Wrapper>
-              <Body>{item.body}</Body>
             </NotificationItem>
           )}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
         />
       </Container>
     </ScreenContainer>
