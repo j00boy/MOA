@@ -69,6 +69,7 @@ const GroupDetail: React.FC = () => {
     setEnterLoading(true);
 
     try {
+      console.log(groupId);
       const response = await api.get(`/group/${groupId}`);
       setGroupInfoDetail(response?.data);
       setEnterLoading(false);
