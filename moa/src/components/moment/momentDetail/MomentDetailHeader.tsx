@@ -21,6 +21,7 @@ const Container = styled.View`
   border-radius: 20px;
   border: 1px solid ${({theme}) => theme.colors.maindarkorange};
   padding: 20px;
+  z-index: 1;
 `;
 
 const TitleLine = styled.View`
@@ -211,14 +212,6 @@ const MomentDetailHeader = ({
               size={22}
               color={theme.colors.maindarkorange}
             />
-            <ShareModal
-              isGroup={false}
-              id={momentInfoDetail.id}
-              name={momentInfoDetail.momentName}
-              pin={momentInfoDetail.momentPin}
-              visible={isShareModalVisible}
-              toggleModal={toggleShareModal}
-            />
           </TouchableOpacity>
           <TouchableOpacity onPress={toggleOptionModal}>
             <Icon
@@ -229,6 +222,14 @@ const MomentDetailHeader = ({
           </TouchableOpacity>
         </IconContainer>
       </TitleLine>
+      <ShareModal
+        isGroup={false}
+        id={momentInfoDetail.id}
+        name={momentInfoDetail.momentName}
+        pin={momentInfoDetail.momentPin}
+        visible={isShareModalVisible}
+        toggleModal={toggleShareModal}
+      />
       <Description>{momentInfoDetail.momentDescription}</Description>
       <TextLine>
         <TextName>생성일</TextName>

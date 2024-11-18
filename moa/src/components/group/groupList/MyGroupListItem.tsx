@@ -42,7 +42,6 @@ const BottomLine = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-top: 20px;
 `;
 
 const MemberLine = styled.View`

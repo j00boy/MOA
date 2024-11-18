@@ -10,7 +10,7 @@ const Container = styled.View<{itemSize: number}>`
   margin-right: 15px;
 `;
 
-const StyledImage = styled(FastImage)<{itemSize: number}>`
+const StyledImage = styled.Image<{itemSize: number}>`
   width: ${({itemSize}) => itemSize}px;
   height: ${({itemSize}) => itemSize}px;
   border: 2px solid ${({theme}) => theme.colors.mediumgray};
