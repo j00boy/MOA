@@ -10,6 +10,7 @@ import {
 } from 'react-native-image-picker';
 import {TextButton} from '../common/button/TextButton';
 import {useUserStore} from '../../stores/userStores';
+import FastImage from 'react-native-fast-image';
 
 const Container = styled.View`
   width: 100%;
@@ -78,7 +79,7 @@ const PlaceholderText = styled.Text`
   font-family: ${(props) => props.theme.fontFamily.SCDream4};
 `;
 
-const PreviewImage = styled.Image`
+const PreviewImage = styled(FastImage)`
   width: 100%;
   height: 300px;
   border-radius: 10px;
@@ -103,14 +104,14 @@ const MyComponent = () => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [fetchUser]);
 
   useEffect(() => {
     if (user) {
       setregisterImage(user?.registerImage || '');
       console.log('처음에는', registerImage);
     }
-  }, [user]);
+  }, [registerImage, user]);
 
   const handleSelectOption = async (option: string) => {
     // 클릭시 modaVisible상태가 false로 변경됨

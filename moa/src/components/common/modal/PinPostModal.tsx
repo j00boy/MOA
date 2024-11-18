@@ -121,7 +121,7 @@ const PinPostModal = ({
       toggleModal();
       onSuccess();
     } catch (error) {
-      Alert.alert('PIN번호 오류', 'PIN번호가 일치하지 않습니다.');
+      Alert.alert('', 'PIN번호가 일치하지 않습니다.');
     }
   };
 

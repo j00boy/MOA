@@ -123,18 +123,21 @@ android {
 }
 
 dependencies {
-    // The version of react-native is set by the React Native Gradle Plugin
-    implementation("com.facebook.react:react-android")
-    implementation project(':react-native-permissions')
-    implementation project(':react-native-gesture-handler')
+    // Exclude any potential android.support conflicts
+    implementation("androidx.core:core:1.9.0") {
+        exclude group: "com.android.support", module: "support-v4"
+        exclude group: "com.android.support", module: "support-compat"
+    }
+    
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.activity:activity:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    // Firebase BoM 추가
+    // Firebase 추가
     implementation platform("com.google.firebase:firebase-bom:33.5.1")
-    // Firebase Analytics 추가
     implementation "com.google.firebase:firebase-analytics"
+    
+    // Hermes 설정
     // Firebase Messaging 추가
     implementation "com.google.firebase:firebase-messaging"
 
@@ -142,5 +145,23 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
+    }
+
+    // React Native 추가 의존성
+    implementation project(':react-native-permissions')
+    implementation project(':react-native-gesture-handler')
+    
+    // Exclude 중복 라이브러리
+    implementation("com.facebook.react:react-android") {
+        exclude group: "com.android.support", module: "support-v4"
+        exclude group: "com.android.support", module: "support-compat"
+    }
+
+     // 중복되는 android.support 제거
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.core:core:1.9.0'
+            force 'androidx.appcompat:appcompat:1.6.1'
+        }
     }
 }

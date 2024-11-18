@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useEffect, useState} from 'react';
 import ScreenContainer from '../../components/common/ScreenContainer';
 import {
@@ -18,20 +18,13 @@ import AlbumContainer from '../../components/album/AlbumContainer';
 import MemberList from '../../components/member/MemberList';
 import {lightColorMap, darkColorMap} from '../../utils/groupColor';
 import Partition from '../../components/common/Partition';
-import styled from 'styled-components/native';
 import api from '../../utils/api';
 import {GroupInfoDetail} from '../../types/group';
 import {AxiosError} from 'axios';
-import {Alert, RefreshControl} from 'react-native';
+import {Alert, RefreshControl, FlatList} from 'react-native';
 import PinPostModal from '../../components/common/modal/PinPostModal';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 // import useNotificationStore from '../../stores/notifyStores';
-
-const Container = styled.ScrollView.attrs({
-  nestedScrollEnabled: true,
-})`
-  width: 100%;
-`;
 
 type GroupDetailRouteProp = RouteProp<HomeStackParamList, 'GroupDetail'>;
 
@@ -100,13 +93,6 @@ const GroupDetail: React.FC = () => {
     getGroupDetail();
   }, [getGroupDetail]);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      getGroupDetail();
-    });
-    return unsubscribe;
-  }, [navigation, getGroupDetail]);
-
   useFocusEffect(
     useCallback(() => {
       getGroupDetail();
@@ -122,7 +108,7 @@ const GroupDetail: React.FC = () => {
       setLightColor(lightColorMap[groupInfoDetail.group.groupColor]);
       setDarkColor(darkColorMap[groupInfoDetail.group.groupColor]);
     }
-  }, [groupInfoDetail, groupInfoDetail.group, navigation]);
+  }, [groupInfoDetail, groupInfoDetail?.group, navigation]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -130,23 +116,10 @@ const GroupDetail: React.FC = () => {
     setRefreshing(false);
   }, []);
 
-  useEffect(() => {
-    if (refreshing) {
-      getGroupDetail();
-      onRefresh();
-    }
-  }, [refreshing, onRefresh]);
-
-  return (
-    <ScreenContainer>
-      {enterLoading || loading ? (
-        <LoadingSpinner isDark={false} />
-      ) : (
-        <Container
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
+  const renderItem = ({item}: {item: string}) => {
+    switch (item) {
+      case 'header':
+        return (
           <GroupDetailHeader
             group={groupInfoDetail.group}
             owner={groupInfoDetail.groupOwner}
@@ -154,13 +127,17 @@ const GroupDetail: React.FC = () => {
             darkColor={darkColor}
             onLoadingChange={handleLoadingChange}
           />
-          <Partition />
+        );
+      case 'members':
+        return (
           <MemberList
             owner={groupInfoDetail.groupOwner}
             memberList={groupInfoDetail.users}
             darkColor={darkColor}
           />
-          <Partition />
+        );
+      case 'album':
+        return (
           <AlbumContainer
             title="다운 가능한 사진"
             isGroup={true}
@@ -170,8 +147,27 @@ const GroupDetail: React.FC = () => {
             images={groupInfoDetail.images}
             expiredAt={groupInfoDetail.expiredAt}
           />
-        </Container>
-      )}
+        );
+      default:
+        return null;
+    }
+  };
+
+  if (enterLoading || loading) {
+    return <LoadingSpinner isDark={false} />;
+  }
+
+  return (
+    <ScreenContainer>
+      <FlatList
+        data={['header', 'members', 'album']}
+        keyExtractor={(item) => item}
+        renderItem={renderItem}
+        ItemSeparatorComponent={() => <Partition />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
       <PinPostModal
         isGroup={true}
         id={groupId}

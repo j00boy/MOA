@@ -69,7 +69,7 @@ const ShareButton = styled.TouchableOpacity`
   top: 50%;
   left: 50%;
   transform: translate(-35px, -35px);
-  z-index: 1;
+  z-index: 2;
 `;
 
 const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
@@ -79,29 +79,31 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
   const handleUploadPress = async () => {
     const result = await launchImageLibrary({
       mediaType: 'photo',
-      selectionLimit: MAX_IMAGES,
+      selectionLimit: 0,
     });
     if (result.didCancel || !result.assets || result.assets.length === 0) {
       return;
     }
 
-    const selectedImages = result.assets
-      .filter((image) => {
-        if (
-          !image.fileSize ||
-          image.fileSize > MAX_IMAGE_SIZE_MB * 1024 * 1024
-        ) {
-          Alert.alert(
-            '사진 용량 초과',
-            `10MB 이하의 사진만 업로드할 수 있습니다.`,
-          );
-          return false;
-        }
-        return true;
-      })
-      .slice(0, MAX_IMAGES);
+    const selectedImages = result.assets.filter((image) => {
+      if (!image.fileSize || image.fileSize > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+        Alert.alert(
+          '사진 용량 초과',
+          '10MB 이하의 사진만 업로드할 수 있습니다.',
+        );
+        return false;
+      }
+
+      return true;
+    });
 
     if (selectedImages) {
+      console.log(selectedImages.length);
+      if (selectedImages.length > MAX_IMAGES) {
+        Alert.alert('', '한 번에 30장까지만 업로드할 수 있습니다.');
+        return;
+      }
+
       const currentRoute = state.routes[state.index];
       const screenName = currentRoute.name;
 
@@ -179,24 +181,32 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
         // 사진 업로드 성공 후 알림 전송
         await sendNotification(Number(id));
 
+        // 사진 업로드 성공 후 알림 전송
+        await sendNotification(Number(id));
+
+        Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
         navigation.navigate('GroupDetail', {groupId: id});
       } else {
-        await api.post(`/moment/${id}/upload`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          transformRequest: (data) => {
-            return data;
-          },
-        });
+        const response = await api.get(`/moment/${id}/upload`);
 
-        navigation.navigate('MomentDetail', {momentId: id});
+        if (response?.data) {
+          await api.post(`/moment/${id}/upload`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+            transformRequest: (data) => {
+              return data;
+            },
+          });
+          Alert.alert('', '사진 공유가 완료되었습니다.');
+          navigation.navigate('MomentDetail', {momentId: id});
+        } else {
+          Alert.alert('', '관리자만 사진을 업로드할 수 있습니다.');
+        }
       }
-
-      Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
     } catch (error) {
       console.log(error);
-      Alert.alert('사진 공유 실패', '사진 공유 도중 오류가 발생했습니다.');
+      Alert.alert('', '사진 공유 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }

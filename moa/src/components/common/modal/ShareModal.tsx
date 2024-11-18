@@ -88,7 +88,7 @@ const ShareModal = ({
         <Icon name="link" size={18} color={theme.colors.deepgray} />
       </LinkContainer>
       <TouchableOpacity onPress={handleKakaoShare}>
-        <KaKaoLogo source={require('../../../assets/images/kakao-logo.png')} />
+        <KaKaoLogo source={require('../../../assets/images/kakao_logo.png')} />
       </TouchableOpacity>
       <ShareContainer onPress={handleShareLink}>
         <Icon name="share" size={18} color={theme.colors.maindarkorange} />

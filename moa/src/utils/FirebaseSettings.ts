@@ -21,7 +21,7 @@ export const requestNotificationPermission = async () => {
         console.log('알림 권한이 거부되었습니다.');
       }
     } catch (err) {
-      console.warn('알림 권한 요청 중 오류 발생:', err);
+      console.log('알림 권한 요청 중 오류 발생:', err);
     }
   } else {
     console.log(

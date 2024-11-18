@@ -73,7 +73,7 @@ const MyMomentList = ({refreshing, onRefresh}: MyMomentListProps) => {
         <MyMomentListItem key={moment.momentId} momentInfo={moment} />
       ))}
       {momentList?.length === 0 && <NullText>가입한 순간이 없습니다.</NullText>}
-      {loading && <LoadingSpinner isDark={false} isScreen={false} />}
+      {loading && <LoadingSpinner isDark={false} />}
     </Container>
   );
 };

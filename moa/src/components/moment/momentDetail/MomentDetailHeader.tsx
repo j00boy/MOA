@@ -127,12 +127,12 @@ const MomentDetailHeader = ({
     try {
       await api.delete(`/moment/${momentInfoDetail.id}`);
       Alert.alert(
-        '순간 삭제 완료',
+        '',
         `${momentInfoDetail.momentName} 순간의 삭제가 완료되었습니다.`,
       );
       navigation.navigate('Home');
     } catch {
-      Alert.alert('순간 삭제 실패', '순간 삭제 도중 오류가 발생했습니다.');
+      Alert.alert('', '순간 삭제 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -142,13 +142,10 @@ const MomentDetailHeader = ({
     setLoading(true);
     try {
       await api.put(`/moment/${momentInfoDetail.id}`);
-      Alert.alert(
-        '순간 나가기 완료',
-        `${momentInfoDetail.momentName} 순간을 나갔습니다.`,
-      );
+      Alert.alert('', `${momentInfoDetail.momentName} 순간을 나갔습니다.`);
       navigation.navigate('Home');
     } catch {
-      Alert.alert('순간 나가기 실패', '순간 탈퇴 도중 오류가 발생했습니다.');
+      Alert.alert('', '순간 탈퇴 도중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
