@@ -138,6 +138,9 @@ dependencies {
     implementation "com.google.firebase:firebase-analytics"
     
     // Hermes 설정
+    // Firebase Messaging 추가
+    implementation "com.google.firebase:firebase-messaging"
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

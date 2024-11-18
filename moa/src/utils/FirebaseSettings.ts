@@ -1,7 +1,11 @@
 import messaging from '@react-native-firebase/messaging';
 // import {Alert} from 'react-native';
 import {Alert, PermissionsAndroid, Platform} from 'react-native';
-
+import notifee, {
+  AuthorizationStatus,
+  AndroidImportance,
+} from '@notifee/react-native';
+import useNotificationStore from '../stores/notifyStores';
 /**
  * Android 13 이상에서 알림 권한 요청
  */
@@ -44,24 +48,68 @@ export async function requestUserPermission() {
 export function setupForegroundMessageHandler() {
   messaging().onMessage(async (remoteMessage) => {
     console.log('알림 왔다!', remoteMessage);
-    Alert.alert(
-      '알림이 도착했습니다!',
-      JSON.stringify(remoteMessage.notification),
-    );
+
+    if (remoteMessage.notification?.title && remoteMessage.notification?.body) {
+      // Notifee로 커스텀 알림 표시
+      await notifee.displayNotification({
+        title: remoteMessage.notification.title,
+        body: remoteMessage.notification.body,
+        android: {
+          channelId: 'default',
+          smallIcon: 'splash_logo', // Android에서 사용할 작은 아이콘
+          color: '#FF8521', // 아이콘 색상
+        },
+        ios: {
+          foregroundPresentationOptions: {
+            alert: true,
+            badge: true,
+            sound: true,
+          },
+        },
+      });
+
+      const notification = {
+        id: remoteMessage.messageId,
+        title: remoteMessage.notification?.title || '알림',
+        body: remoteMessage.notification?.body || '',
+        receivedAt: new Date().toISOString(),
+      };
+
+      // Zustand 스토어에 상태 업데이트
+      useNotificationStore.setState((state) => ({
+        notifications: [notification, ...state.notifications],
+      }));
+    }
+
+    // 아래는 추후 삭제
+    // Alert.alert(
+    //   '알림이 도착했습니다!',
+    //   JSON.stringify(remoteMessage.notification),
+    // );
   });
 }
 
 // Background/Terminated 상태에서의 알림 처리 핸들러
-export function setupBackgroundMessageHandler() {
-  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-    console.log('백그라운드 알림:', remoteMessage);
-  });
-}
+// export function setupBackgroundMessageHandler() {
+//   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+//     console.log('백그라운드 알림:', remoteMessage);
 
-// export const getFcmToken = async () => {
-//   const fcmToken = await messaging().getToken();
-//   console.log('[FCM Token] ', fcmToken);
-// };
+//     if (remoteMessage.notification?.title && remoteMessage.notification?.body) {
+//       const notification = {
+//         id: remoteMessage.messageId || Date.now(),
+//         title: remoteMessage.notification.title,
+//         body: remoteMessage.notification.body,
+//         receivedAt: new Date().toISOString(),
+//       };
+
+//       // Zustand 스토어에 상태 업데이트
+//       useNotificationStore.setState((state) => ({
+//         notifications: [notification, ...state.notifications],
+//       }));
+//     }
+//   });
+// }
+
 export const getFcmToken = async (): Promise<string | null> => {
   try {
     const fcmToken = await messaging().getToken();
@@ -72,3 +120,16 @@ export const getFcmToken = async (): Promise<string | null> => {
     return null; // 오류가 발생하면 null 반환
   }
 };
+
+// 알림 채널 생성
+export async function createNotificationChannel() {
+  const channelId = await notifee.createChannel({
+    id: 'default',
+    name: 'Default Channel',
+    importance: AndroidImportance.HIGH, // 알림 중요도
+  });
+  console.log('Notification Channel 생성됨:', channelId);
+}
+
+// 앱 초기화 시 호출
+createNotificationChannel();

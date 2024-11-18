@@ -24,6 +24,7 @@ import {AxiosError} from 'axios';
 import {Alert, RefreshControl, FlatList} from 'react-native';
 import PinPostModal from '../../components/common/modal/PinPostModal';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+// import useNotificationStore from '../../stores/notifyStores';
 
 type GroupDetailRouteProp = RouteProp<HomeStackParamList, 'GroupDetail'>;
 

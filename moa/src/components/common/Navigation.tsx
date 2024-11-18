@@ -134,6 +134,20 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
     }
   };
 
+  const sendNotification = async (groupId: number) => {
+    try {
+      const response = await api.post('/alarm', groupId);
+
+      if (response.data === 1) {
+        console.log('푸시 알림 전송 성공');
+      } else {
+        console.warn('푸시 알림 전송 실패');
+      }
+    } catch (error) {
+      console.error('푸시 알림 전송 중 오류:', error);
+    }
+  };
+
   const uploadImage = async (
     isGroup: boolean,
     id: string,
@@ -163,6 +177,9 @@ const Navigation: React.FC<BottomTabBarProps> = ({state, navigation}) => {
             return data;
           },
         });
+
+        // 사진 업로드 성공 후 알림 전송
+        await sendNotification(Number(id));
 
         Alert.alert('사진 공유 완료', '사진 공유가 완료되었습니다.');
         navigation.navigate('GroupDetail', {groupId: id});
