@@ -74,6 +74,7 @@ const GroupDetail: React.FC = () => {
       setEnterLoading(false);
     } catch (error: unknown) {
       if (error instanceof AxiosError && error.response?.data.status === 403) {
+        console.log(error);
         toggleModal();
       } else {
         Alert.alert('', '나의 그룹 조회 도중 오류가 발생했습니다.');
@@ -90,7 +91,7 @@ const GroupDetail: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       getGroupDetail();
-    }, [groupId]),
+    }, [getGroupDetail]),
   );
 
   useEffect(() => {
@@ -147,21 +148,21 @@ const GroupDetail: React.FC = () => {
     }
   };
 
-  if (enterLoading || loading) {
-    return <LoadingSpinner isDark={false} />;
-  }
-
   return (
     <ScreenContainer>
-      <FlatList
-        data={['header', 'members', 'album']}
-        keyExtractor={(item) => item}
-        renderItem={renderItem}
-        ItemSeparatorComponent={() => <Partition />}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
+      {loading || enterLoading ? (
+        <LoadingSpinner isDark={false} />
+      ) : (
+        <FlatList
+          data={['header', 'members', 'album']}
+          keyExtractor={(item) => item}
+          renderItem={renderItem}
+          ItemSeparatorComponent={() => <Partition />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      )}
       <PinPostModal
         isGroup={true}
         id={groupId}

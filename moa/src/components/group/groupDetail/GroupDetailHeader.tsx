@@ -245,6 +245,7 @@ const GroupDetailHeader = ({
             isGroup={true}
             id={group.groupId}
             name={group.groupName}
+            pin={group.groupPin}
             visible={isShareModalVisible}
             toggleModal={toggleShareModal}
           />

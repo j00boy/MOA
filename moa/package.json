@@ -33,6 +33,7 @@
     "react-native-fs": "^2.20.0",
     "react-native-image-picker": "^7.1.2",
     "react-native-kakao-share-link": "^1.0.10",
+    "react-native-manage-external-storage": "^0.1.8",
     "react-native-modal-dropdown": "^1.0.2",
     "react-native-permissions": "^5.1.0",
     "react-native-screens": "^3.29.0",

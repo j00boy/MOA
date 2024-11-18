@@ -198,6 +198,7 @@ const MomentDetailHeader = ({
               isGroup={false}
               id={momentInfoDetail.id}
               name={momentInfoDetail.momentName}
+              pin={momentInfoDetail.momentPin}
               visible={isShareModalVisible}
               toggleModal={toggleShareModal}
             />
