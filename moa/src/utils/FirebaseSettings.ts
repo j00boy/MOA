@@ -56,8 +56,8 @@ export function setupForegroundMessageHandler() {
         body: remoteMessage.notification.body,
         android: {
           channelId: 'default',
-          smallIcon: 'moa_logo', // Android에서 사용할 작은 아이콘
-          color: '#FF0000', // 아이콘 색상
+          smallIcon: 'splash_logo', // Android에서 사용할 작은 아이콘
+          color: '#FF8521', // 아이콘 색상
         },
         ios: {
           foregroundPresentationOptions: {

@@ -21,7 +21,7 @@ const NotificationItem = styled.View`
 `;
 const Wrapper = styled.View`
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-end;
   width: 310px;
 `;
 
