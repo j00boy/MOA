@@ -1,9 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import {Alert, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {MomentInfoDetail} from '../../../types/moment';
 import styled, {useTheme} from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AwesomeIcon from 'react-native-vector-icons/FontAwesome6';
 import StyledModal from '../../common/modal/StyledModal';
 import PinModal from '../../common/modal/PinModal';
 import {AppHeaderNavigationProp} from '../../../types/screen';
@@ -25,12 +27,6 @@ const TitleLine = styled.View`
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-`;
-
-const LeftTime = styled.Text`
-  font-family: SCDream5;
-  font-size: 15px;
-  color: ${({theme}) => theme.colors.maindarkorange};
 `;
 
 const IconContainer = styled.View`
@@ -91,6 +87,7 @@ const MomentDetailHeader = ({
   const [isPinModalVisible, setPinModalVisible] = useState(false);
   const [isShareModalVisible, setShareModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [iconName, setIconName] = useState('hourglass-start');
 
   const navigation = useNavigation<AppHeaderNavigationProp>();
 
@@ -109,6 +106,19 @@ const MomentDetailHeader = ({
   useEffect(() => {
     onLoadingChange(loading);
   }, [loading, onLoadingChange]);
+
+  const iconSequence = ['hourglass-start', 'hourglass-half', 'hourglass-end'];
+
+  useEffect(() => {
+    let currentIndex = 0;
+
+    const interval = setInterval(() => {
+      setIconName(iconSequence[currentIndex]); // 아이콘 이름 변경
+      currentIndex = (currentIndex + 1) % iconSequence.length; // 인덱스를 순환
+    }, 1000); // 1초마다 실행
+
+    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+  }, []);
 
   const options =
     momentInfoDetail.momentOwner.userId === userId
@@ -182,8 +192,15 @@ const MomentDetailHeader = ({
   return (
     <Container>
       <TitleLine>
-        {/* <LeftTime>남은 시간 타이머</LeftTime> */}
-        <Timer createdAt={momentInfoDetail.createdAt} />
+        <TextLine>
+          <AwesomeIcon
+            name={iconName}
+            color={theme.colors.maindarkorange}
+            size={24}
+          />
+
+          <Timer createdAt={momentInfoDetail.createdAt} />
+        </TextLine>
         <IconContainer>
           <TouchableOpacity
             onPress={toggleShareModal}

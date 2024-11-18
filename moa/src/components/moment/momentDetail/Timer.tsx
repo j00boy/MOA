@@ -4,6 +4,7 @@ import {useTimerStore} from '../../../stores/timeStores';
 import Hourglass from './HourGlass';
 
 const Container = styled.View`
+  margin-left: 10px;
   flex-direction: row;
 `;
 const LeftTime = styled.Text`
