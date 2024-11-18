@@ -38,9 +38,10 @@ const ReceivedAt = styled.Text`
 `;
 
 const Body = styled.Text`
-  font-size: 14px;
+  font-size: 12px;
   color: ${(props) => props.theme.colors.deepgray};
   font-family: ${(props) => props.theme.fontFamily.SCDream4};
+  margin-bottom: 5px;
 `;
 
 const Notification = () => {
