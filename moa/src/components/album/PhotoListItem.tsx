@@ -43,7 +43,8 @@ const RemainingTimeText = styled.Text`
   align-items: center;
   font-family: 'SCDream5';
   font-size: 10px;
-  padding: 0 2px;
+  padding: 0 3px;
+  text-align: center;
   color: ${({theme}) => theme.colors.lightgray};
 `;
 
@@ -54,7 +55,7 @@ interface PhotoListItemProps {
   itemSize: number;
   isLastInRow: boolean;
   isSelectMode?: boolean;
-  remainingTime?: string | null;
+  remainingTime?: number | null;
 }
 
 const PhotoListItem = ({

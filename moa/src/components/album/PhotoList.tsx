@@ -3,12 +3,7 @@ import styled from 'styled-components/native';
 import PhotoListItem from './PhotoListItem';
 import {Images} from '../../types/moment';
 import {GroupImages} from '../../types/group';
-import {
-  differenceInHours,
-  formatDuration,
-  intervalToDuration,
-  parseISO,
-} from 'date-fns';
+import {differenceInHours, parseISO} from 'date-fns';
 
 const Container = styled.View`
   width: 100%;
