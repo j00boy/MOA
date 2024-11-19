@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Registration Test</title>
+</head>
+<body>
+    <h2>얼굴 임베딩 테스트</h2>
+    <form id="faceForm">
+        <label for="imageUrl">이미지 URL:</label>
+        <input type="text" id="imageUrl" name="imageUrl" placeholder="이미지 URL을 입력하세요" required>
+        <button type="submit">등록</button>
+    </form>
+
+    <h3>응답</h3>
+    <pre id="response">여기에 응답이 표시됩니다...</pre>
+
+    <script>
+        document.getElementById("faceForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            // 이미지 URL 가져오기
+            const imageUrl = document.getElementById("imageUrl").value;
+            const responseElement = document.getElementById("response");
+
+            try {
+                // API 요청
+                const response = await fetch("http://15.165.52.31:8008/fast/regist_face", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ image_url: imageUrl })
+                });
+
+                if (!response.ok) {
+                    throw new Error("요청 실패: " + response.statusText);
+                }
+
+                // 임베딩 값 받기
+                const blob = await response.blob();
+                const arrayBuffer = await blob.arrayBuffer();
+                const float32Array = new Float32Array(arrayBuffer);
+                
+                // 결과 표시
+                responseElement.textContent = "임베딩 값: " + float32Array.join(", ");
+            } catch (error) {
+                responseElement.textContent = "오류: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
