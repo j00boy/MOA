@@ -1,0 +1,103 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.MOA'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Data JPA 및 Web Starter
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // MySQL JDBC Driver
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Security 및 OAuth2 클라이언트
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // Jackson 사용 시
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Swagger (OpenAPI 문서화 도구)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
+    // 테스트 의존성
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+    implementation 'org.springframework.data:spring-data-redis'
+
+    // AWS S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.767'
+    implementation 'software.amazon.awssdk:s3:2.27.3'
+    implementation 'software.amazon.awssdk:s3control:2.27.3'
+    implementation 'software.amazon.awssdk:s3outposts:2.27.3'
+
+    //MongoDB
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    //Firebase
+    implementation group: 'com.google.firebase', name: 'firebase-admin', version: '9.3.0'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // 이미지 변환 Thumbnailator
+    implementation 'net.coobird:thumbnailator:0.4.1'
+
+    // 이미지의 EXIF 데이터를 읽는 라이브러리
+    implementation 'com.drewnoakes:metadata-extractor:2.6.2'
+
+    // JAXB API: AWS SDK가 Base64 인코딩/디코딩에 필요한 라이브러리
+    implementation 'javax.xml.bind:jaxb-api:2.2.4'
+
+    // Spring Batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+    
+}
+
+application {
+    mainClass = 'com.MOA.backend.A602Application'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+bootJar {
+    archiveBaseName.set('moa')    // JAR 파일의 기본 이름 설정
+    archiveVersion.set('1.0')         // 버전 설정
+    archiveClassifier.set('release')  // 선택적: 분류자 설정 (필요 없으면 생략 가능)
+    archiveFileName.set('moa.jar') // 전체 파일 이름 지정 (선택 사항)
+}
