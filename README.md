@@ -1,6 +1,6 @@
 # 📸 MOA
 
-<img src="./asset/information/intro.png" width=50%>
+<img src="./asset/information/intro.png" width=60%>
 <br><br>
 
 ## 🔍 프로젝트 개요
@@ -68,13 +68,13 @@
 ## 🛠️ 기술 소개
 
 ### 🔶 얼굴 사진 등록 (AI)
-<img src="./asset/information/regist.png" width="50%"><br>
+<img src="./asset/information/regist.png" width="60%"><br>
 - **OpenCV의 face_recognition 라이브러리** 활용하여 얼굴 임베딩 값을 추출한 후 DB에 저장
 
 <br>
 
 ### 🔶 분류 및 다운로드 (AI)
-<img src="./asset/information/classify.png" width="50%"><br>
+<img src="./asset/information/classify.png" width="60%"><br>
 - **인물 사진 분류**<br>
 공유된 사진들에서 얼굴 검출 후 각 얼굴의 임베딩 값을 저장된 임베딩 값과 비교하여 동일 얼굴 분류
 - **음식 사진 분류**<br>
@@ -84,7 +84,7 @@
 <br>
 
 ### 🔶 시스템 아키텍쳐 (BE)
-<img src="./asset/information/architecture.png" width="50%"><br>
+<img src="./asset/information/architecture.png" width="60%"><br>
 - **DB**<br>
     - **MySQL**<br>
     유저와 그룹의 복잡한 관계를 강력한 조인으로 효과적으로 관리
@@ -103,7 +103,7 @@
 <br>
 
 ### 🔶 초대 및 공유 (FE)
-<img src="./asset/display/share.png" width="20%"><br>
+<img src="./asset/display/share.png" width="30%"><br>
 
 - **딥링크와 앱링크**<br>
 딥링크와 앱링크를 모두 사용하여 플랫폼에 관계없이 앱 내의 특정 콘텐츠에 빠르게 접근 가능
@@ -176,7 +176,7 @@ body
 
 <br>
 
-## type 종류
+### type 종류
 ```
 Feat : 새로운 기능 추가
 Fix : 버그 수정
@@ -208,7 +208,7 @@ Remove: 파일을 삭제하는 작업만 수행한 경우
 
 <br>
 
-## 커밋 예시
+### 커밋 예시
 ```
 == ex1
 ✨[Feat] 얼굴 등록 구현
