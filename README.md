@@ -1,4 +1,5 @@
 # 📸 MOA
+## 😊삼성청년SW아카데미 11기 자율프로젝트 1등 (자유주제, 우수상)😊
 
 <img src="./asset/information/intro.png" width=60%>
 <br><br>
